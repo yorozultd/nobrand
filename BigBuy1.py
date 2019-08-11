@@ -124,7 +124,12 @@ for i in range(len(productsjson)):
     description = description.split(".")[1]
     title = thisinformation['name']
     sku  = thisinformation['sku']
+
+# Please get this from https://api.bigbuy.eu/rest/catalog/categories.json?isoCode=ru :
     category= thisproduct['category']
+# Please get this from https://api.bigbuy.eu/rest/catalog/categories.json?isoCode=ru :
+    parent_category = thisproduct['category']
+
     style= "NAN"
     color= "NAN"
     gender = "NAN"
@@ -146,6 +151,8 @@ for i in range(len(productsjson)):
                 'extended_description':     data[2],
                 'title':                    data[3],
                 'sku':                      data[4],
+# TODO this variable
+                'parent_category':          data[5],
                 'category':                 data[5],
                 'style':                    data[6],
                 'colour':                   data[7],
