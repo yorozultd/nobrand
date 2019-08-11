@@ -4,10 +4,19 @@ import json
 from progress.bar import Bar
 from time import sleep
 import sys
+import argparse
+import pandas as pd
 
-senttoserver= True
+parser = argparse.ArgumentParser(description="This is a program to handle Nobrand ")
+parser.add_argument("-c","--saveCsv",action="store_true",help="It stores the csv")
+parser.add_argument("-u","--update",action="store_true",help="It updates the numpy files")
+parser.add_argument("-s","--sync",action="store_true",help="It syncs the files")
+
+args=parser.parse_args()
+
+senttoserver= False
 UPDATE = False
-
+STORE = False
 add_product_endpoint = "http://no1brand.ru/add-product/"
 
 AuthHeader= {"Authorization":"Bearer Zjk2ZTI0YWE1ZGNiNzBmMWNkZWIwNjliNTE2NzcyNDQ1N2EzMDllNzhhMGIyZDllNTViMmQxZGFhNWY5ODM3Yg"}
@@ -20,6 +29,9 @@ def update() :
         pickle.dump(r.content, f);
     with open("Images","wb") as f :
         r=requests.get("https://api.bigbuy.eu/rest/catalog/productsimages", headers=AuthHeader)
+        pickle.dump(r.content, f);
+    with open("Catagories","wb") as f :
+        r=requests.get("https://api.bigbuy.eu/rest/catalog/categories.json?isoCode=ru", headers=AuthHeader)
         pickle.dump(r.content, f);
 class Product:
     def __init__(self):
@@ -54,19 +66,42 @@ class Product:
         self.street_price  = productdata[12]
         self.suggested_price  = productdata[13]
         self.novat_price  = productdata[14]
-if UPDATE:
+if args.update:
     update()
     sys.exit()
+
+
 with open("Products","rb") as f :
     products =pickle.load(f)
 with open("Information","rb") as f :
     information =pickle.load(f)
 with open("Images","rb") as f :
     images =pickle.load(f)
+with open("Catagories","rb") as f :
+    catagories =pickle.load(f)
 
 productsjson = json.loads(products)
 informationjson = json.loads(information)
 imagesjson = json.loads(images)
+catagoriesjson = json.loads(catagories)
+
+
+if args.saveCsv:
+    ids =[] 
+    skus= []
+    for i in range(len(productsjson)):
+        ids.append(productsjson[i]['id'])
+        skus.append(productsjson[i]['sku'])
+    main = pd.DataFrame({
+        "ID" : ids, "SKU": skus 
+    })
+    main.to_csv("product_skus.csv")
+    sys.exit()
+
+if args.sync:
+    
+    sys.exit()
+
 PRODUCTS = []
 #bar = Bar('Processing', max=len(productsjson))
 
@@ -83,8 +118,10 @@ for i in range(len(productsjson)):
             break
     product = Product()
     ids  = thisproduct['id']
-    description = thisinformation['description']
-    smalldescription = description[:100]
+    #description = thisinformation['description']
+    #smalldescription = description[:100]
+    smalldescription = description.split(".")[0]
+    description = description.split(".")[1]
     title = thisinformation['name']
     sku  = thisinformation['sku']
     category= thisproduct['category']
