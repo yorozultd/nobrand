@@ -24,6 +24,9 @@ def update() :
     with open("Products","wb") as f :
         r=requests.get("https://api.bigbuy.eu/rest/catalog/products", headers=AuthHeader)
         pickle.dump(r.content, f);
+    with open("english_information","wb") as f :
+        r=requests.get("https://api.bigbuy.eu/rest/catalog/productsinformation.json?isoCode=en", headers=AuthHeader)
+        pickle.dump(r.content, f);
     with open("Information","wb") as f :
         r=requests.get("https://api.bigbuy.eu/rest/catalog/productsinformation.json?isoCode=ru", headers=AuthHeader)
         pickle.dump(r.content, f);
@@ -73,6 +76,8 @@ if args.update:
 
 with open("Products","rb") as f :
     products =pickle.load(f)
+with open("english_information","rb") as f :
+    english_information =pickle.load(f)
 with open("Information","rb") as f :
     information =pickle.load(f)
 with open("Images","rb") as f :
@@ -82,6 +87,7 @@ with open("Catagories","rb") as f :
 
 productsjson = json.loads(products)
 informationjson = json.loads(information)
+english_informationjson = json.loads(english_information)
 imagesjson = json.loads(images)
 catagoriesjson = json.loads(catagories)
 
@@ -112,18 +118,26 @@ for i in range(len(productsjson)):
         if productsjson[i]['id'] == informationjson[j]['id']:
             thisinformation = informationjson[j]
             break
+    for j in range(len(english_informationjson)):
+        if productsjson[i]['id'] == english_informationjson[j]['id']:
+            this_english_information = english_informationjson[j]
+            break
     for k in range(len(imagesjson)):
         if productsjson[i]['id']== imagesjson[k]['id']:
             thisimages = imagesjson[k]
             break
     product = Product()
     ids  = thisproduct['id']
-    #description = thisinformation['description']
+    description = thisinformation['description']
     #smalldescription = description[:100]
     smalldescription = description.split(".")[0]
     description = description.split(".")[1]
     title = thisinformation['name']
     sku  = thisinformation['sku']
+
+    title_in_english = this_english_information['name']
+    description_in_english  = this_english_information['description']
+
 
 # Please get this from https://api.bigbuy.eu/rest/catalog/categories.json?isoCode=ru :
     category= thisproduct['category']
@@ -150,6 +164,10 @@ for i in range(len(productsjson)):
                 'description':              data[1],
                 'extended_description':     data[2],
                 'title':                    data[3],
+# TODO this variable
+                'english_description':      description_in_english,
+                'english_title':            title_in_english,
+
                 'sku':                      data[4],
 # TODO this variable
                 'parent_category':          data[5],
