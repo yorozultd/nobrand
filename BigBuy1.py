@@ -21,6 +21,9 @@ add_product_endpoint = "http://no1brand.ru/add-product/"
 
 AuthHeader= {"Authorization":"Bearer Zjk2ZTI0YWE1ZGNiNzBmMWNkZWIwNjliNTE2NzcyNDQ1N2EzMDllNzhhMGIyZDllNTViMmQxZGFhNWY5ODM3Yg"}
 def update() :
+    with open("stock_info","wb") as f :
+        r=requests.get("https://api.bigbuy.eu/rest/catalog/productsstock.json", headers=AuthHeader)
+        pickle.dump(r.content, f);
     with open("Products","wb") as f :
         r=requests.get("https://api.bigbuy.eu/rest/catalog/products", headers=AuthHeader)
         pickle.dump(r.content, f);
@@ -76,6 +79,8 @@ if args.update:
 
 with open("Products","rb") as f :
     products =pickle.load(f)
+with open("stock_info","rb") as f :
+    stock_info = pickle.load(f)
 with open("english_information","rb") as f :
     english_information =pickle.load(f)
 with open("Information","rb") as f :
@@ -86,6 +91,7 @@ with open("Catagories","rb") as f :
     catagories =pickle.load(f)
 
 productsjson = json.loads(products)
+stock_info_json = json.loads(stock_info)
 informationjson = json.loads(information)
 english_informationjson = json.loads(english_information)
 imagesjson = json.loads(images)
@@ -126,6 +132,12 @@ for i in range(len(productsjson)):
         if productsjson[i]['id']== imagesjson[k]['id']:
             thisimages = imagesjson[k]
             break
+
+    for k in range(len(stock_info_json)):
+        if productsjson[i]['id']== stock_info_json[k]['id']:
+            this_stock_info = stock_info_json[k]
+            break
+
     product = Product()
     ids  = thisproduct['id']
     description = thisinformation['description']
@@ -167,6 +179,7 @@ for i in range(len(productsjson)):
 # TODO this variable
                 'descriptionInEnglishFromFeed':      description_in_english,
                 'titleInEnglishFromFeed':            title_in_english,
+                'stock_info':                        this_stock_info,
 
                 'sku':                               data[4],
 # TODO this variable
