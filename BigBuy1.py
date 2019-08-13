@@ -180,6 +180,9 @@ for i in range(len(productsjson)):
                 'descriptionInEnglishFromFeed':      description_in_english,
                 'titleInEnglishFromFeed':            title_in_english,
                 'stock_info':                        this_stock_info,
+                'supplier':                          "bigb",
+
+
 
                 'sku':                               data[4],
 # TODO this variable
