@@ -160,27 +160,27 @@ for i in range(len(productsjson)):
     PRODUCTS.append(product)
     if senttoserver  :
         payload = {
-                'bigbuy':                   data[0],
-                'description':              data[1],
-                'extended_description':     data[2],
-                'title':                    data[3],
+                'bigbuy':                            data[0],
+                'description':                       data[1],
+                'extended_description':              data[2],
+                'title':                             data[3],
 # TODO this variable
-                'english_description':      description_in_english,
-                'english_title':            title_in_english,
+                'descriptionInEnglishFromFeed':      description_in_english,
+                'titleInEnglishFromFeed':            title_in_english,
 
-                'sku':                      data[4],
+                'sku':                               data[4],
 # TODO this variable
-                'parent_category':          data[5],
-                'category':                 data[5],
-                'style':                    data[6],
-                'colour':                   data[7],
-                'gender':                   data[8],
-                'image_1':                  data[9],
-                'image_2':                  data[10],
-                'image_3':                  data[11],
-                'street_price':             data[12],
-                'suggested_price':          data[13],
-                'novat_price':              data[14],
+                'parent_category':                   data[5],
+                'category':                          data[5],
+                'style':                             data[6],
+                'colour':                            data[7],
+                'gender':                            data[8],
+                'image_1':                           data[9],
+                'image_2':                           data[10],
+                'image_3':                           data[11],
+                'street_price':                      data[12],
+                'suggested_price':                   data[13],
+                'novat_price':                       data[14],
         }
         r= requests.post(add_product_endpoint, data=payload)
         print(payload)
