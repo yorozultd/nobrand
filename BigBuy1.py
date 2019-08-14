@@ -11,6 +11,7 @@ parser = argparse.ArgumentParser(description="This is a program to handle Nobran
 parser.add_argument("-c","--saveCsv",action="store_true",help="It stores the csv")
 parser.add_argument("-u","--update",action="store_true",help="It updates the numpy files")
 parser.add_argument("-s","--sync",action="store_true",help="It syncs the files")
+parser.add_argument("-d","--send",action="store_true",help="It sends the files")
 
 args=parser.parse_args()
 
@@ -75,7 +76,8 @@ class Product:
 if args.update:
     update()
     sys.exit()
-
+if args.send:
+    senttoserver=True
 
 with open("Products","rb") as f :
     products =pickle.load(f)
@@ -99,19 +101,19 @@ catagoriesjson = json.loads(catagories)
 
 
 if args.saveCsv:
-    ids =[] 
+    ids =[]
     skus= []
     for i in range(len(productsjson)):
         ids.append(productsjson[i]['id'])
         skus.append(productsjson[i]['sku'])
     main = pd.DataFrame({
-        "ID" : ids, "SKU": skus 
+        "ID" : ids, "SKU": skus
     })
     main.to_csv("product_skus.csv")
     sys.exit()
 
 if args.sync:
-    
+
     sys.exit()
 
 PRODUCTS = []
@@ -142,14 +144,17 @@ for i in range(len(productsjson)):
     ids  = thisproduct['id']
     description = thisinformation['description']
     #smalldescription = description[:100]
-    smalldescription = description.split(".")[0]
-    description = description.split(".")[1]
+    #smalldescription = description.split("\n")[0]
+    #description = description.split("\n")[1]
+    smalldescription = description[:100]
+    description = description[100:]
     title = thisinformation['name']
     sku  = thisinformation['sku']
 
     title_in_english = this_english_information['name']
     description_in_english  = this_english_information['description']
 
+    print("HERE ")
 
 # Please get this from https://api.bigbuy.eu/rest/catalog/categories.json?isoCode=ru :
     category= thisproduct['category']
@@ -165,11 +170,13 @@ for i in range(len(productsjson)):
         data.append(thisimages['images'][l]['url'])
     for h in range(3-numberofimages):
         data.append("Null")
+    print("HERE 2")
     data.append(thisproduct['retailPrice'])
     data.append(thisproduct['inShopsPrice'])
     data.append(thisproduct['wholesalePrice'])
     product.setData(data)
     PRODUCTS.append(product)
+    print("HERE 3")
     if senttoserver  :
         payload = {
                 'bigbuy':                            data[0],
