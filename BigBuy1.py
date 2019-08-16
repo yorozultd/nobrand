@@ -164,6 +164,7 @@ for i in range(len(productsjson)):
             this_stock_info = stock_info_json[k]
             break
 
+    stock_info = this_stock_info['stocks'][0]['quantity']
     product = Product()
     ids  = thisproduct['id']
     description = thisinformation['description']
@@ -208,7 +209,7 @@ for i in range(len(productsjson)):
 # TODO this variable
                 'descriptionInEnglish':              description_in_english,
                 'titleInEnglish':                    title_in_english,
-                'stock_info':                        this_stock_info,
+                'stock_info':                        stock_info,
                 'supplier':                          "bigb",
 
 
