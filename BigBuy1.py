@@ -1,3 +1,4 @@
+# usage: python3 BigBuy1.py --update
 import requests
 import pickle
 import json
@@ -6,6 +7,11 @@ from time import sleep
 import sys
 import argparse
 import pandas as pd
+import lib.logger as lgr
+import time,datetime
+
+
+
 
 parser = argparse.ArgumentParser(description="This is a program to handle Nobrand ")
 parser.add_argument("-c","--saveCsv",action="store_true",help="It stores the csv")
@@ -21,25 +27,33 @@ STORE = False
 add_product_endpoint = "http://no1brand.ru/add-product/"
 
 AuthHeader= {"Authorization":"Bearer Zjk2ZTI0YWE1ZGNiNzBmMWNkZWIwNjliNTE2NzcyNDQ1N2EzMDllNzhhMGIyZDllNTViMmQxZGFhNWY5ODM3Yg"}
-def update() :
+def update(logger) :
+    logger.wtil("Now updating...")
+    logger.wtil("Getting stock_info...")
     with open("stock_info","wb") as f :
         r=requests.get("https://api.bigbuy.eu/rest/catalog/productsstock.json", headers=AuthHeader)
         pickle.dump(r.content, f);
+    logger.wtil("Getting products...")
     with open("Products","wb") as f :
         r=requests.get("https://api.bigbuy.eu/rest/catalog/products", headers=AuthHeader)
         pickle.dump(r.content, f);
+    logger.wtil("Getting english_information...")
     with open("english_information","wb") as f :
         r=requests.get("https://api.bigbuy.eu/rest/catalog/productsinformation.json?isoCode=en", headers=AuthHeader)
         pickle.dump(r.content, f);
+    logger.wtil("Getting information...")
     with open("Information","wb") as f :
         r=requests.get("https://api.bigbuy.eu/rest/catalog/productsinformation.json?isoCode=ru", headers=AuthHeader)
         pickle.dump(r.content, f);
+    logger.wtil("Getting images...")
     with open("Images","wb") as f :
         r=requests.get("https://api.bigbuy.eu/rest/catalog/productsimages", headers=AuthHeader)
         pickle.dump(r.content, f);
+    logger.wtil("Getting categories...")
     with open("Catagories","wb") as f :
         r=requests.get("https://api.bigbuy.eu/rest/catalog/categories.json?isoCode=ru", headers=AuthHeader)
         pickle.dump(r.content, f);
+    logger.wtil("Done...")
 class Product:
     def __init__(self):
         self.bigbuy=0
@@ -73,8 +87,12 @@ class Product:
         self.street_price  = productdata[12]
         self.suggested_price  = productdata[13]
         self.novat_price  = productdata[14]
+
+logger = lgr.Logger("bigbuy")
+ts = time.time()
+logger.wtil("Launching application..."+datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S'))
 if args.update:
-    update()
+    update(logger)
     sys.exit()
 if args.send:
     senttoserver=True
