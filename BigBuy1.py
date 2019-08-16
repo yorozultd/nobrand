@@ -1,5 +1,7 @@
-# usage: python3 BigBuy1.py --update
+# usage: rm -rf ./log/* && python3 BigBuy1.py >./log/bigbuy_log.out 2>./log/bigbuy_error.out &
 import requests
+import pprint
+
 import pickle
 import json
 from progress.bar import Bar
@@ -97,6 +99,7 @@ if args.update:
 if args.send:
     senttoserver=True
 
+logger.wtil("Reading data from files...")
 with open("Products","rb") as f :
     products =pickle.load(f)
 with open("stock_info","rb") as f :
@@ -117,6 +120,7 @@ english_informationjson = json.loads(english_information)
 imagesjson = json.loads(images)
 catagoriesjson = json.loads(catagories)
 
+logger.wtil("Data processed...")
 
 if args.saveCsv:
     ids =[]
@@ -137,6 +141,8 @@ if args.sync:
 PRODUCTS = []
 #bar = Bar('Processing', max=len(productsjson))
 
+logger.wtil("Now uploading products...")
+logger.wtil("Number of products: "+str(len(productsjson)))
 for i in range(len(productsjson)):
     #bar.next();
     thisproduct= productsjson[i]
@@ -172,7 +178,6 @@ for i in range(len(productsjson)):
     title_in_english = this_english_information['name']
     description_in_english  = this_english_information['description']
 
-    print("HERE ")
 
 # Please get this from https://api.bigbuy.eu/rest/catalog/categories.json?isoCode=ru :
     category= thisproduct['category']
@@ -188,13 +193,12 @@ for i in range(len(productsjson)):
         data.append(thisimages['images'][l]['url'])
     for h in range(3-numberofimages):
         data.append("Null")
-    print("HERE 2")
     data.append(thisproduct['retailPrice'])
     data.append(thisproduct['inShopsPrice'])
     data.append(thisproduct['wholesalePrice'])
     product.setData(data)
     PRODUCTS.append(product)
-    print("HERE 3")
+    logger.wtil("Passing: "+str(title_in_english))
     if senttoserver  :
         payload = {
                 'bigbuy':                            data[0],
@@ -202,8 +206,8 @@ for i in range(len(productsjson)):
                 'extended_description':              data[2],
                 'title':                             data[3],
 # TODO this variable
-                'descriptionInEnglishFromFeed':      description_in_english,
-                'titleInEnglishFromFeed':            title_in_english,
+                'descriptionInEnglish':              description_in_english,
+                'titleInEnglish':                    title_in_english,
                 'stock_info':                        this_stock_info,
                 'supplier':                          "bigb",
 
@@ -224,8 +228,8 @@ for i in range(len(productsjson)):
                 'novat_price':                       data[14],
         }
         r= requests.post(add_product_endpoint, data=payload)
-        print(payload)
-        print(r.content)
+        logger.wtil(str(pprint.pformat(payload)))
+        logger.wtil(str(r.content))
         break
 #bar.finish()
 #with open("ENDPRODUCTS","wb") as f :

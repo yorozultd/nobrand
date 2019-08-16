@@ -1,0 +1,85 @@
+Launching application...2019-08-16 08:56:57
+Reading data from files...
+Data processed...
+Now uploading products...
+Number of products: 39500
+Passing: Mini Humidifier Scent Diffuser Honey Pine InnovaGoods
+{'bigbuy': 93650,
+ 'category': 3186,
+ 'colour': 'NAN',
+ 'description': '¡<b>InnovaGoods</b> предлагет лучшие новинки для дома, такие '
+                'как <b>Мини-увлажнитель и распылитель з',
+ 'descriptionInEnglishFromFeed': '<b>InnovaGoods</b> offers the latest items '
+                                 'for your home, such as the <b>Mini '
+                                 'Humidifier Scent Diffuser Honey Pine '
+                                 'InnovaGoods Home Deco</b>! Discover a wide '
+                                 'range of high-quality products which stand '
+                                 'out for their functionality, efficiency and '
+                                 'innovative design: lighting, storage, '
+                                 'decoration, air conditioning, garden, pets, '
+                                 'cleaning, etc.<ul><li>Material: '
+                                 'ABS</li><li>Touch button: '
+                                 'On/Off</li><li>Capacity: 180 '
+                                 'ml</li><li>Ultrasonic</li><li>Silent</li><li>Multicolour '
+                                 'LED sequence</li><li>Double-function: '
+                                 'improves air quality and scents the '
+                                 'environment</li><li>Long lasting: 7 '
+                                 'h</li><li>Spray: 30 ml/h</li><li>500 mA / 5 '
+                                 'V / 2 W</li><li>Works with USB connection '
+                                 '(includes USB-micro cable)</li><li>Switches '
+                                 'off automatically when water runs '
+                                 'out</li><li>Does not include essential '
+                                 'oils</li><li>Approx. dimensions: 8 x 12,5 x '
+                                 '8 cm</li><li>Packaging and manual in 24 '
+                                 'languages (English, French, Spanish, German, '
+                                 'Italian, Portuguese, Dutch, Polish, '
+                                 'Hungarian, Romanian, Danish, Swedish, '
+                                 'Finnish, Lithuanian, Norwegian, Slovenian, '
+                                 'Greek, Czech, Bulgarian, Croatian, '
+                                 'Slovakian, Estonian, Russian and '
+                                 'Latvian)</li></ul>',
+ 'extended_description': 'апахов Honey Pine InnovaGoods Home Deco</b>! '
+                         'Знакомьтесь с широкой линейкой качественных товаров, '
+                         'которые отличаются функциональностью, эффективностью '
+                         'и инновационным дизайном: освещение, организация '
+                         'хранения, декор, управление климатом, дача и сад, '
+                         'домашние животные, уборка, пр.<ul><li>Материал: '
+                         'ABS</li><li>Тактильная кнопка: '
+                         'On/Off</li><li>Мощность: 180 '
+                         'ml</li><li>Ультразвуковой</li><li>Бесшумный</li><li>Многоцветная '
+                         'последовательная светодиодная '
+                         'подсветка</li><li>Двойная функция: Улучшает качество '
+                         'воздуха и наполняет его запахом</li><li>Хватает на '
+                         'долго: 7 h</li><li>Распыление: 30 ml/h</li><li>500 '
+                         'mA / 5 V / 2 W</li><li>Работает посредством '
+                         'USB-соединения (в комплекте идет кабель USB - '
+                         'микро-USB)</li><li>Автоматически отключается, когда '
+                         'заканчивается вода</li><li>Ароматические масла в '
+                         'комплект не входят</li><li>Размеры прим.: 8 x 12,5 x '
+                         '8 cm</li><li>Упаковка и инструкция на 24 языках '
+                         '(английский, болгарский, венгерский, голландский, '
+                         'греческий, датский, итальянский, испанский, '
+                         'латышский, литовский, немецкий, норвежский, '
+                         'польский, португальский, румынский, русский, '
+                         'словацкий, словенский, финский, французский, '
+                         'хорватский, чешский, шведский, эстонский)</li></ul>',
+ 'gender': 'NAN',
+ 'image_1': 'https://cdnbigbuy.com/images/8435527814571_V0101197_000.jpg',
+ 'image_2': 'https://cdnbigbuy.com/images/8435527814571_V0101197_09.jpg',
+ 'image_3': 'https://cdnbigbuy.com/images/8435527814571_V0101197_01.jpg',
+ 'novat_price': 8.77,
+ 'parent_category': 3186,
+ 'sku': 'V0101197',
+ 'stock_info': {'id': 93650,
+                'sku': 'V0101197',
+                'stocks': [{'maxHandlingDays': 2,
+                            'minHandlingDays': 1,
+                            'quantity': 1355}]},
+ 'street_price': 20.58,
+ 'style': 'NAN',
+ 'suggested_price': 39.99,
+ 'supplier': 'bigb',
+ 'title': 'Мини-увлажнитель и распылитель запахов Honey Pine InnovaGoods',
+ 'titleInEnglishFromFeed': 'Mini Humidifier Scent Diffuser Honey Pine '
+                           'InnovaGoods'}
+b'Saved new product with id: N1B-362675B brand: '
