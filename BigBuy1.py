@@ -205,10 +205,12 @@ for i in range(len(productsjson)):
                 'suggested_price':                   data[13],
                 'novat_price':                       data[14],
         }
+
         r= requests.post(add_product_endpoint, data=payload)
         print(payload)
         print(r.content)
-        break
+        if(i==1):
+            break
 #bar.finish()
 #with open("ENDPRODUCTS","wb") as f :
 #    pickle.dump(PRODUCTS,f)
