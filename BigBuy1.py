@@ -9,6 +9,7 @@ import argparse
 import pandas as pd
 import lib.logger as lgr
 import time,datetime
+import numpy as np
 
 
 
@@ -129,9 +130,18 @@ if args.saveCsv:
     })
     main.to_csv("product_skus.csv")
     sys.exit()
-
+def Quantity(idofProduct):
+    for k in range(len(stock_info_json)):
+        if idofProduct== stock_info_json[k]['id']:
+            return stock_info_json[k]['stocks'][0]['quantity']
+            
+    
 if args.sync:
-
+    data = pd.read_csv("product_skus.csv") 
+    dataArray = np.array(data)
+    for i in range(dataArray):
+        if( Quantity(dataArray[i][1]) < 1 ): 
+            r=requests.get("https://api.bigbuy.eu/disable-product"+str(dataArray[i][2]), headers=AuthHeader)
     sys.exit()
 
 PRODUCTS = []
