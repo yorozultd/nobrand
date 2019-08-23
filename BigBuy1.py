@@ -53,7 +53,7 @@ def update(logger) :
         r=requests.get("https://api.bigbuy.eu/rest/catalog/productsimages", headers=AuthHeader)
         pickle.dump(r.content, f);
     logger.wtil("Getting categories...")
-    with open("Catagories","wb") as f :
+    with open("categories","wb") as f :
         r=requests.get("https://api.bigbuy.eu/rest/catalog/categories.json?isoCode=ru", headers=AuthHeader)
         pickle.dump(r.content, f);
     logger.wtil("Done...")
@@ -111,15 +111,15 @@ with open("Information","rb") as f :
     information =pickle.load(f)
 with open("Images","rb") as f :
     images =pickle.load(f)
-with open("Catagories","rb") as f :
-    catagories =pickle.load(f)
+with open("categories","rb") as f :
+    categories =pickle.load(f)
 
 productsjson = json.loads(products)
 stock_info_json = json.loads(stock_info)
 informationjson = json.loads(information)
 english_informationjson = json.loads(english_information)
 imagesjson = json.loads(images)
-catagoriesjson = json.loads(catagories)
+categoriesjson = json.loads(categories)
 
 logger.wtil("Data processed...")
 
