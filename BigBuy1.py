@@ -191,10 +191,15 @@ for i in range(len(productsjson)):
 
 
 # Please get this from https://api.bigbuy.eu/rest/catalog/categories.json?isoCode=ru :
-    category= thisproduct['category']
+    #category= thisproduct['category']
 # Please get this from https://api.bigbuy.eu/rest/catalog/categories.json?isoCode=ru :
-    parent_category = thisproduct['category']
-
+    #parent_category = thisproduct['category']
+    for k in range(len(categoriesjson)):
+        if thisproduct['category']== categoriesjson[k]['id']:
+            this_cat_info = categoriesjson[k]
+            break
+    category= this_cat_info['id']
+    parent_category = this_cat_info['parentCategory']
     style= "NAN"
     color= "NAN"
     gender = "NAN"
@@ -238,8 +243,12 @@ for i in range(len(productsjson)):
                 'suggested_price':                   data[13],
                 'novat_price':                       data[14],
         }
-
+        
         r= requests.post(add_product_endpoint, data=payload)
+        #with open('skus.csv', 'a') as csvFile:
+        #    writer = csv.writer(csvFile)
+        #    writer.writerow([ids,r])
+        print(r.content)
         logger.wtil(str(pprint.pformat(payload)))
         logger.wtil(str(r.content))
         break
