@@ -1,7 +1,7 @@
 # usage: rm -rf ./log/* && python3 BigBuy1.py >./log/bigbuy_log.out 2>./log/bigbuy_error.out &
 import requests
 import pprint
-
+import csv
 import pickle
 import json
 from progress.bar import Bar
@@ -245,10 +245,9 @@ for i in range(len(productsjson)):
         }
         
         r= requests.post(add_product_endpoint, data=payload)
-        #with open('skus.csv', 'a') as csvFile:
-        #    writer = csv.writer(csvFile)
-        #    writer.writerow([ids,r])
-        print(r.content)
+        with open('skus.csv', 'a') as csvFile:
+            writer = csv.writer(csvFile)
+            writer.writerow([ids,r.content.split(" ")[5]])
         logger.wtil(str(pprint.pformat(payload)))
         logger.wtil(str(r.content))
         break
