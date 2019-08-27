@@ -198,7 +198,7 @@ for i in range(len(productsjson)):
         if thisproduct['category']== categoriesjson[k]['id']:
             this_cat_info = categoriesjson[k]
             break
-    category= this_cat_info['id']
+    category= this_cat_info['name']
     parent_category = this_cat_info['parentCategory']
     style= "NAN"
     color= "NAN"
