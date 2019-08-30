@@ -1,4 +1,4 @@
-# usage: rm -rf ./log/* && python3 BigBuy1.py >./log/bigbuy_log.out 2>./log/bigbuy_error.out &
+# usage: rm -rf ./log/* && python3 BigBuy1.py >./bigbuy_log.out 2>./bigbuy_error.out &
 import requests
 import pprint
 import csv
@@ -9,7 +9,7 @@ from time import sleep
 import sys
 import argparse
 import pandas as pd
-import lib1.logger as lgr
+import lib.logger as lgr
 import time,datetime
 import numpy as np
 
@@ -182,7 +182,7 @@ for i in range(len(productsjson)):
     #smalldescription = description.split("\n")[0]
     #description = description.split("\n")[1]
     smalldescription = description[:100]
-    description = description[100:]
+    description = description
     title = thisinformation['name']
     sku  = thisinformation['sku']
 
@@ -251,7 +251,7 @@ for i in range(len(productsjson)):
         }
         
         r= requests.post(add_product_endpoint, data=payload)
-        print(r.content)
+        logger.wtil(str(r.content))
         with open('skus.csv', 'a') as csvFile:
             writer = csv.writer(csvFile)
             writer.writerow([ids,str(r.content).split(" ")[5]])
