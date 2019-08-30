@@ -56,6 +56,9 @@ def update(logger) :
     with open("categories","wb") as f :
         r=requests.get("https://api.bigbuy.eu/rest/catalog/categories.json?isoCode=ru", headers=AuthHeader)
         pickle.dump(r.content, f);
+    with open("categoriesEn","wb") as f :
+        r=requests.get("https://api.bigbuy.eu/rest/catalog/categories.json?isoCode=en", headers=AuthHeader)
+        pickle.dump(r.content, f);
     logger.wtil("Done...")
 class Product:
     def __init__(self):
@@ -101,25 +104,27 @@ if args.send:
     senttoserver=True
 
 logger.wtil("Reading data from files...")
-with open("Products","rb") as f :
-    products =pickle.load(f)
-with open("stock_info","rb") as f :
-    stock_info = pickle.load(f)
-with open("english_information","rb") as f :
-    english_information =pickle.load(f)
-with open("Information","rb") as f :
-    information =pickle.load(f)
-with open("Images","rb") as f :
-    images =pickle.load(f)
-with open("categories","rb") as f :
-    categories =pickle.load(f)
-
+#with open("Products","rb") as f :
+#    products =pickle.load(f)
+#with open("stock_info","rb") as f :
+#    stock_info = pickle.load(f)
+#with open("english_information","rb") as f :
+#    english_information =pickle.load(f)
+#with open("Information","rb") as f :
+#    information =pickle.load(f)
+#with open("Images","rb") as f :
+#    images =pickle.load(f)
+#with open("categories","rb") as f :
+#    categories =pickle.load(f)
+with open("categoriesEn","rb") as f :
+    categoriesEn =pickle.load(f)
 productsjson = json.loads(products)
 stock_info_json = json.loads(stock_info)
 informationjson = json.loads(information)
 english_informationjson = json.loads(english_information)
 imagesjson = json.loads(images)
 categoriesjson = json.loads(categories)
+categoriesjsonEn = json.loads(categoriesEn)
 
 logger.wtil("Data processed...")
 
@@ -138,13 +143,13 @@ def Quantity(idofProduct):
     for k in range(len(stock_info_json)):
         if idofProduct== stock_info_json[k]['id']:
             return stock_info_json[k]['stocks'][0]['quantity']
-            
-    
+
+
 if args.sync:
-    data = pd.read_csv("product_skus.csv") 
+    data = pd.read_csv("product_skus.csv")
     dataArray = np.array(data)
     for i in range(dataArray):
-        if( Quantity(dataArray[i][1]) < 1 ): 
+        if( Quantity(dataArray[i][1]) < 1 ):
             r=requests.get("https://api.bigbuy.eu/disable-product"+str(dataArray[i][2]), headers=AuthHeader)
     sys.exit()
 
@@ -198,7 +203,12 @@ for i in range(len(productsjson)):
         if thisproduct['category']== categoriesjson[k]['id']:
             this_cat_info = categoriesjson[k]
             break
+    for k in range(len(categoriesjsonEn)):
+        if thisproduct['category']== categoriesjsonEn[k]['id']:
+            this_cat_infoEn = categoriesjsonEn[k]
+            break
     category= this_cat_info['name']
+    categoryEn= this_cat_info['name']
     parent_category = this_cat_info['parentCategory']
     style= "NAN"
     color= "NAN"
@@ -232,7 +242,7 @@ for i in range(len(productsjson)):
                 'titleInEnglish':                    title_in_english,
                 'stock_info':                        stock_info,
                 'supplier':                          "bigb",
-
+                'english_category' :                categoryEn,
 
 
                 'sku':                               data[4],
@@ -249,7 +259,7 @@ for i in range(len(productsjson)):
                 'suggested_price':                   data[13],
                 'novat_price':                       data[14],
         }
-        
+
         r= requests.post(add_product_endpoint, data=payload)
         logger.wtil(str(r.content))
         with open('skus.csv', 'a') as csvFile:
