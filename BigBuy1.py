@@ -257,7 +257,7 @@ for i in range(len(productsjson)):
             writer.writerow([ids,str(r.content).split(" ")[5]])
         logger.wtil(str(pprint.pformat(payload)))
         logger.wtil(str(r.content))
-        break
+#        break
 #bar.finish()
 #with open("ENDPRODUCTS","wb") as f :
 #    pickle.dump(PRODUCTS,f)
