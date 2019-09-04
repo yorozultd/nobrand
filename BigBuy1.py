@@ -150,21 +150,22 @@ logger.wtil("Number of products: "+str(len(productsjson)))
 
 for i in range(len(productsjson)):
     thisproduct = productsjson[i]
-    for j in range(len(informationjson)):
-        if productsjson[i]['id'] == informationjson[j]['id']:
-            thisinformation = informationjson[j]
-            break
+    product_id = productsjson[i]['id']
+
+    thisinformation = [x for x in informationjson if x['id'] == product_id]
+
+
     for j in range(len(english_informationjson)):
-        if productsjson[i]['id'] == english_informationjson[j]['id']:
+        if product_id == english_informationjson[j]['id']:
             this_english_information = english_informationjson[j]
             break
     for k in range(len(imagesjson)):
-        if productsjson[i]['id']== imagesjson[k]['id']:
+        if product_id == imagesjson[k]['id']:
             thisimages = imagesjson[k]
             break
 
     for k in range(len(stock_info_json)):
-        if productsjson[i]['id']== stock_info_json[k]['id']:
+        if product_id == stock_info_json[k]['id']:
             this_stock_info = stock_info_json[k]
             break
 
