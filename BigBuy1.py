@@ -1,5 +1,7 @@
 # usage: rm -rf ./log/* && python3 BigBuy1.py --update >./bigbuy_log.out 2>./bigbuy_error.out &
 import requests
+import xml.etree.ElementTree as ET
+
 import pprint
 import csv
 import pickle
@@ -14,6 +16,7 @@ import time,datetime
 import numpy as np
 
 import allowed_categories
+import minimum_price
 
 
 
@@ -59,6 +62,11 @@ def update(logger) :
         pickle.dump(r.content, f);
     with open("categoriesEn","wb") as f :
         r=requests.get("https://api.bigbuy.eu/rest/catalog/categories.json?isoCode=en", headers=AuthHeader)
+        pickle.dump(r.content, f);
+
+    logger.wtil("Getting manufacturers...")
+    with open("manufacturers","wb") as f :
+        r=requests.get("https://api.bigbuy.eu/rest/catalog/manufacturers.json", headers=AuthHeader)
         pickle.dump(r.content, f);
     logger.wtil("Done...")
 
@@ -119,6 +127,8 @@ with open("Images","rb") as f :
     images =pickle.load(f)
 with open("categories","rb") as f :
     categories =pickle.load(f)
+with open("manufacturers","rb") as f :
+    manufacturers =pickle.load(f)
 with open("categoriesEn","rb") as f :
     categoriesEn =pickle.load(f)
 productsjson = json.loads(products)
@@ -128,20 +138,40 @@ english_informationjson = json.loads(english_information)
 imagesjson = json.loads(images)
 categoriesjson = json.loads(categories)
 categoriesjsonEn = json.loads(categoriesEn)
+manufacturersjson = json.loads(manufacturers)
 
 logger.wtil("Data processed...")
 
-def Quantity(idofProduct):
-    for k in range(len(stock_info_json)):
-        if idofProduct== stock_info_json[k]['id']:
-            return stock_info_json[k]['stocks'][0]['quantity']
+def Quantity(idofProduct,stock_info_json):
+    this_stock_info = [x for x in stock_info_json if x['sku'] == idofProduct]
+    if(len(this_stock_info) == 0):
+     return 0
+    stock_info  = this_stock_info[0]['stocks'][0]['quantity']
+
+    return stock_info
 
 if args.sync:
-    data = pd.read_csv("product_skus.csv")
-    dataArray = np.array(data)
-    for i in range(dataArray):
-        if( Quantity(dataArray[i][1]) < 1 ):
-            r=requests.get("https://api.bigbuy.eu/disable-product"+str(dataArray[i][2]), headers=AuthHeader)
+
+    all_listing_skus = []
+    all_listing_inner_skus = []
+    resp=requests.get(url="http://no1brand.ru/get-number-of-active-products/bigb")
+    number_of_active_products = int(resp.content)
+    number_of_requests = int(number_of_active_products / 1000)
+
+    for i in range(0,number_of_requests+1):
+     offset = i*1000
+     resp=requests.get(url="http://no1brand.ru/product-xml-with-offset/"+str(offset)+"/bigb")
+     root = ET.fromstring(resp.content)
+     [all_listing_skus.append(x.text) for x in root.findall('./product/sku')]
+     [all_listing_inner_skus.append(x.text) for x in root.findall('./product/inner_sku')]
+    logger.wtil("Number of products: "+str(len(all_listing_skus)))
+
+
+    for sku in all_listing_skus:
+        if( Quantity(sku,stock_info_json) < 1 ):
+            logger.wtil("Disabling: "+str(sku))
+            inner_sku = all_listing_inner_skus[all_listing_skus.index(sku)]
+            r=requests.get("https://api.bigbuy.eu/unpublish-product/"+str(inner_sku))
     sys.exit()
 
 products = []
@@ -151,6 +181,7 @@ number_of_products = len(productsjson)
 number_of_updated_products = 0
 logger.wtil("Number of products: "+str(number_of_products))
 
+disabled_categories = []
 for i in range(len(productsjson)):
     thisproduct = productsjson[i]
     product_id = productsjson[i]['id']
@@ -179,10 +210,20 @@ for i in range(len(productsjson)):
     category= this_cat_info['name']
     categoryEn= this_cat_infoEn['name']
 
+    for k in range(len(manufacturersjson)):
+        if thisproduct['manufacturer']== manufacturersjson[k]['id']:
+            manufacturer = manufacturersjson[k]['name']
+            break
+
     upload_this = False
-    if(categoryEn in allowed_categories.ac):
+    if(categoryEn in allowed_categories.ac and int(thisproduct['wholesalePrice']) > minimum_price.mp):
      logger.wtil("At product: "+str(title_in_english)+" ("+str(categoryEn)+") "+str(i))
      upload_this = True
+    else: 
+     if(categoryEn not in disabled_categories ):
+       disabled_categories.append(categoryEn)
+    if(i % 500 == 0): 
+     logger.wtil("disabled_categories: "+str(disabled_categories)+" "+str(i))
 
     product = Product()
     smalldescription = description[:100]
@@ -221,6 +262,7 @@ for i in range(len(productsjson)):
                      'descriptionInEnglish':              description_in_english,
                      'titleInEnglish':                    title_in_english,
                      'stock_info':                        stock_info,
+                     'brand':                             manufacturer,
                      'supplier':                          "bigb",
                      'english_category' :                 categoryEn,
                      'sku':                               data[4],
