@@ -1,4 +1,4 @@
-# usage: rm -rf ./log/* && python3 BigBuy1.py >./bigbuy_log.out 2>./bigbuy_error.out &
+# usage: rm -rf ./log/* && python3 BigBuy1.py --update >./bigbuy_log.out 2>./bigbuy_error.out &
 import requests
 import pprint
 import csv
@@ -17,19 +17,19 @@ import numpy as np
 
 
 parser = argparse.ArgumentParser(description="This is a program to handle Nobrand ")
-parser.add_argument("-c","--saveCsv",action="store_true",help="It stores the csv")
 parser.add_argument("-u","--update",action="store_true",help="It updates the numpy files")
 parser.add_argument("-s","--sync",action="store_true",help="It syncs the files")
 parser.add_argument("-d","--send",action="store_true",help="It sends the files")
 
 args=parser.parse_args()
 
-senttoserver= False
 UPDATE = False
 STORE = False
+
 add_product_endpoint = "http://no1brand.ru/add-product/"
 
 AuthHeader= {"Authorization":"Bearer Zjk2ZTI0YWE1ZGNiNzBmMWNkZWIwNjliNTE2NzcyNDQ1N2EzMDllNzhhMGIyZDllNTViMmQxZGFhNWY5ODM3Yg"}
+
 def update(logger) :
     logger.wtil("Now updating...")
     logger.wtil("Getting stock_info...")
@@ -60,48 +60,50 @@ def update(logger) :
         r=requests.get("https://api.bigbuy.eu/rest/catalog/categories.json?isoCode=en", headers=AuthHeader)
         pickle.dump(r.content, f);
     logger.wtil("Done...")
+
 class Product:
     def __init__(self):
-        self.bigbuy=0
-        self.small_description=0
-        self.description=0
-        self.title=0
-        self.sku=0
-        self.category=0
-        self.style=0
-        self.colour=0
-        self.gender=0
-        self.image_1=0
-        self.image_2=0
-        self.image_3=0
-        self.street_price=0
-        self.suggested_price=0
-        self.novat_price=0
+        self.bigbuy             = 0
+        self.small_description  = 0
+        self.description        = 0
+        self.title              = 0
+        self.sku                = 0
+        self.category           = 0
+        self.style              = 0
+        self.colour             = 0
+        self.gender             = 0
+        self.image_1            = 0
+        self.image_2            = 0
+        self.image_3            = 0
+        self.street_price       = 0
+        self.suggested_price    = 0
+        self.novat_price        = 0
+
     def setData(self,productdata):
-        self.bigbuy  = productdata[0]
+        self.bigbuy             = productdata[0]
         self.small_description  = productdata[1]
-        self.description  = productdata[2]
-        self.title  = productdata[3]
-        self.sku  = productdata[4]
-        self.category  = productdata[5]
-        self.style  = productdata[6]
-        self.colour  = productdata[7]
-        self.gender  = productdata[8]
-        self.image_1  = productdata[9]
-        self.image_2  = productdata[10]
-        self.image_3  = productdata[11]
-        self.street_price  = productdata[12]
-        self.suggested_price  = productdata[13]
-        self.novat_price  = productdata[14]
+        self.description        = productdata[2]
+        self.title              = productdata[3]
+        self.sku                = productdata[4]
+        self.category           = productdata[5]
+        self.style              = productdata[6]
+        self.colour             = productdata[7]
+        self.gender             = productdata[8]
+        self.image_1            = productdata[9]
+        self.image_2            = productdata[10]
+        self.image_3            = productdata[11]
+        self.street_price       = productdata[12]
+        self.suggested_price    = productdata[13]
+        self.novat_price        = productdata[14]
 
 logger = lgr.Logger("bigbuy")
 ts = time.time()
+
 logger.wtil("Launching application..."+datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S'))
+
 if args.update:
     update(logger)
     sys.exit()
-if args.send:
-    senttoserver=True
 
 logger.wtil("Reading data from files...")
 #with open("Products","rb") as f :
@@ -128,22 +130,10 @@ categoriesjsonEn = json.loads(categoriesEn)
 
 logger.wtil("Data processed...")
 
-if args.saveCsv:
-    ids =[]
-    skus= []
-    for i in range(len(productsjson)):
-        ids.append(productsjson[i]['id'])
-        skus.append(productsjson[i]['sku'])
-    main = pd.DataFrame({
-        "ID" : ids, "SKU": skus
-    })
-    main.to_csv("product_skus.csv")
-    sys.exit()
 def Quantity(idofProduct):
     for k in range(len(stock_info_json)):
         if idofProduct== stock_info_json[k]['id']:
             return stock_info_json[k]['stocks'][0]['quantity']
-
 
 if args.sync:
     data = pd.read_csv("product_skus.csv")
@@ -153,14 +143,12 @@ if args.sync:
             r=requests.get("https://api.bigbuy.eu/disable-product"+str(dataArray[i][2]), headers=AuthHeader)
     sys.exit()
 
-PRODUCTS = []
-#bar = Bar('Processing', max=len(productsjson))
+products = []
 
 logger.wtil("Now uploading products...")
 logger.wtil("Number of products: "+str(len(productsjson)))
 for i in range(len(productsjson)):
-    #bar.next();
-    thisproduct= productsjson[i]
+    thisproduct = productsjson[i]
     for j in range(len(informationjson)):
         if productsjson[i]['id'] == informationjson[j]['id']:
             thisinformation = informationjson[j]
@@ -183,9 +171,6 @@ for i in range(len(productsjson)):
     product = Product()
     ids  = thisproduct['id']
     description = thisinformation['description']
-    #smalldescription = description[:100]
-    #smalldescription = description.split("\n")[0]
-    #description = description.split("\n")[1]
     smalldescription = description[:100]
     description = description
     title = thisinformation['name']
@@ -229,44 +214,41 @@ for i in range(len(productsjson)):
     data.append(thisproduct['inShopsPrice'])
     data.append(thisproduct['wholesalePrice'])
     product.setData(data)
-    PRODUCTS.append(product)
-    logger.wtil("Passing: "+str(title_in_english))
-    if senttoserver  :
-        payload = {
-                'bigbuy':                            data[0],
-                'description':                       data[1],
-                'extended_description':              data[2],
-                'title':                             data[3],
-# TODO this variable
-                'descriptionInEnglish':              description_in_english,
-                'titleInEnglish':                    title_in_english,
-                'stock_info':                        stock_info,
-                'supplier':                          "bigb",
-                'english_category' :                categoryEn,
+    products.append(product)
 
+categories = list(set([x.category for x in products]))
+logger.wtil("Categories: "+str(categories))
 
-                'sku':                               data[4],
-# TODO this variable
-                'parent_category':                   data[5],
-                'category':                          data[5],
-                'style':                             data[6],
-                'colour':                            data[7],
-                'gender':                            data[8],
-                'image_1':                           data[9],
-                'image_2':                           data[10],
-                'image_3':                           data[11],
-                'street_price':                      data[12],
-                'suggested_price':                   data[13],
-                'novat_price':                       data[14],
-        }
+if(args.send):
 
-        r= requests.post(add_product_endpoint, data=payload)
-        logger.wtil(str(r.content))
-        with open('skus.csv', 'a') as csvFile:
-            writer = csv.writer(csvFile)
-            writer.writerow([ids,str(r.content).split(" ")[5]])
-        logger.wtil(str(pprint.pformat(payload)))
-        logger.wtil(str(r.content))
-#bar.finish()
-#with open("ENDPRODUCTS","wb") as f :
-#    pickle.dump(PRODUCTS,f)
+ for product in products:
+  logger.wtil("Passing: "+str(title_in_english))
+  payload = {
+                 'bigbuy':                            data[0],
+                 'description':                       data[1],
+                 'extended_description':              data[2],
+                 'title':                             data[3],
+                 'descriptionInEnglish':              description_in_english,
+                 'titleInEnglish':                    title_in_english,
+                 'stock_info':                        stock_info,
+                 'supplier':                          "bigb",
+                 'english_category' :                 categoryEn,
+                 'sku':                               data[4],
+                 'parent_category':                   data[5],
+                 'category':                          data[5],
+                 'style':                             data[6],
+                 'colour':                            data[7],
+                 'gender':                            data[8],
+                 'image_1':                           data[9],
+                 'image_2':                           data[10],
+                 'image_3':                           data[11],
+                 'street_price':                      data[12],
+                 'suggested_price':                   data[13],
+                 'novat_price':                       data[14],
+         }
+ 
+  r = requests.post(add_product_endpoint, data=payload)
+  logger.wtil(str(r.content))
+ 
+  logger.wtil(str(pprint.pformat(payload)))
+  logger.wtil(str(r.content))
