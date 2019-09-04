@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "BigBuy1.py", line 152, in <module>
+    for j in range(len(informationjson)):
+KeyboardInterrupt

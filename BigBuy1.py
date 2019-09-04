@@ -106,18 +106,18 @@ if args.update:
     sys.exit()
 
 logger.wtil("Reading data from files...")
-#with open("Products","rb") as f :
-#    products =pickle.load(f)
-#with open("stock_info","rb") as f :
-#    stock_info = pickle.load(f)
-#with open("english_information","rb") as f :
-#    english_information =pickle.load(f)
-#with open("Information","rb") as f :
-#    information =pickle.load(f)
-#with open("Images","rb") as f :
-#    images =pickle.load(f)
-#with open("categories","rb") as f :
-#    categories =pickle.load(f)
+with open("Products","rb") as f :
+    products =pickle.load(f)
+with open("stock_info","rb") as f :
+    stock_info = pickle.load(f)
+with open("english_information","rb") as f :
+    english_information =pickle.load(f)
+with open("Information","rb") as f :
+    information =pickle.load(f)
+with open("Images","rb") as f :
+    images =pickle.load(f)
+with open("categories","rb") as f :
+    categories =pickle.load(f)
 with open("categoriesEn","rb") as f :
     categoriesEn =pickle.load(f)
 productsjson = json.loads(products)
@@ -147,6 +147,7 @@ products = []
 
 logger.wtil("Now uploading products...")
 logger.wtil("Number of products: "+str(len(productsjson)))
+
 for i in range(len(productsjson)):
     thisproduct = productsjson[i]
     for j in range(len(informationjson)):
@@ -192,6 +193,7 @@ for i in range(len(productsjson)):
         if thisproduct['category']== categoriesjsonEn[k]['id']:
             this_cat_infoEn = categoriesjsonEn[k]
             break
+    logger.wtil("At product: "+str(this_cat_infoEn['name']))
     category= this_cat_info['name']
     categoryEn= this_cat_info['name']
     parent_category = this_cat_info['parentCategory']
