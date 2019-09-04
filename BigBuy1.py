@@ -13,6 +13,7 @@ import lib.logger as lgr
 import time,datetime
 import numpy as np
 
+import allowed_categories
 
 
 
@@ -146,41 +147,26 @@ if args.sync:
 products = []
 
 logger.wtil("Now uploading products...")
-logger.wtil("Number of products: "+str(len(productsjson)))
+number_of_products = len(productsjson)
+number_of_updated_products = 0
+logger.wtil("Number of products: "+str(number_of_products))
 
 for i in range(len(productsjson)):
     thisproduct = productsjson[i]
     product_id = productsjson[i]['id']
 
-    thisinformation = [x for x in informationjson if x['id'] == product_id]
+    thisinformation = [x for x in informationjson if x['id'] == product_id][0]
+    this_english_information = [x for x in english_informationjson if x['id'] == product_id][0]
+    thisimages = [x for x in imagesjson if x['id'] == product_id][0]
+    this_stock_info = [x for x in stock_info_json if x['id'] == product_id][0]
 
-
-    for j in range(len(english_informationjson)):
-        if product_id == english_informationjson[j]['id']:
-            this_english_information = english_informationjson[j]
-            break
-    for k in range(len(imagesjson)):
-        if product_id == imagesjson[k]['id']:
-            thisimages = imagesjson[k]
-            break
-
-    for k in range(len(stock_info_json)):
-        if product_id == stock_info_json[k]['id']:
-            this_stock_info = stock_info_json[k]
-            break
-
-    stock_info = this_stock_info['stocks'][0]['quantity']
-    product = Product()
-    ids  = thisproduct['id']
+    stock_info  = this_stock_info['stocks'][0]['quantity']
+    ids         = thisproduct['id']
     description = thisinformation['description']
-    smalldescription = description[:100]
-    description = description
-    title = thisinformation['name']
-    sku  = thisinformation['sku']
+    title       = thisinformation['name']
+    sku         = thisinformation['sku']
 
     title_in_english = this_english_information['name']
-    description_in_english  = this_english_information['description']
-
 
     for k in range(len(categoriesjson)):
         if thisproduct['category']== categoriesjson[k]['id']:
@@ -190,9 +176,20 @@ for i in range(len(productsjson)):
         if thisproduct['category']== categoriesjsonEn[k]['id']:
             this_cat_infoEn = categoriesjsonEn[k]
             break
-    logger.wtil("At product: "+str(this_cat_infoEn['name']))
     category= this_cat_info['name']
     categoryEn= this_cat_infoEn['name']
+
+    upload_this = False
+    if(categoryEn in allowed_categories.ac):
+     logger.wtil("At product: "+str(title_in_english)+" ("+str(categoryEn)+") "+str(i))
+     upload_this = True
+
+    product = Product()
+    smalldescription = description[:100]
+    description = description
+    description_in_english  = this_english_information['description']
+
+
     parent_category = this_cat_info['parentCategory']
     style= "NAN"
     color= "NAN"
@@ -214,40 +211,37 @@ for i in range(len(productsjson)):
     data.append(thisproduct['wholesalePrice'])
     product.setData(data)
     products.append(product)
+    if(args.send and upload_this):
+      logger.wtil("Passing: "+str(title_in_english))
+      payload = {
+                     'bigbuy':                            data[0],
+                     'description':                       data[1],
+                     'extended_description':              data[2],
+                     'title':                             data[3],
+                     'descriptionInEnglish':              description_in_english,
+                     'titleInEnglish':                    title_in_english,
+                     'stock_info':                        stock_info,
+                     'supplier':                          "bigb",
+                     'english_category' :                 categoryEn,
+                     'sku':                               data[4],
+                     'parent_category':                   data[5],
+                     'category':                          data[5],
+                     'style':                             data[6],
+                     'colour':                            data[7],
+                     'gender':                            data[8],
+                     'image_1':                           data[9],
+                     'image_2':                           data[10],
+                     'image_3':                           data[11],
+                     'street_price':                      data[12],
+                     'suggested_price':                   data[13],
+                     'novat_price':                       data[14],
+             }
+     
+      r = requests.post(add_product_endpoint, data=payload)
+      logger.wtil(str(r.content))
+     
+      logger.wtil(str(pprint.pformat(payload)))
+      logger.wtil(str(r.content))
+      number_of_updated_products = number_of_updated_products + 1
 
-categories = list(set([x.category for x in products]))
-logger.wtil("Categories: "+str(categories))
-
-if(args.send):
-
- for product in products:
-  logger.wtil("Passing: "+str(title_in_english))
-  payload = {
-                 'bigbuy':                            data[0],
-                 'description':                       data[1],
-                 'extended_description':              data[2],
-                 'title':                             data[3],
-                 'descriptionInEnglish':              description_in_english,
-                 'titleInEnglish':                    title_in_english,
-                 'stock_info':                        stock_info,
-                 'supplier':                          "bigb",
-                 'english_category' :                 categoryEn,
-                 'sku':                               data[4],
-                 'parent_category':                   data[5],
-                 'category':                          data[5],
-                 'style':                             data[6],
-                 'colour':                            data[7],
-                 'gender':                            data[8],
-                 'image_1':                           data[9],
-                 'image_2':                           data[10],
-                 'image_3':                           data[11],
-                 'street_price':                      data[12],
-                 'suggested_price':                   data[13],
-                 'novat_price':                       data[14],
-         }
- 
-  r = requests.post(add_product_endpoint, data=payload)
-  logger.wtil(str(r.content))
- 
-  logger.wtil(str(pprint.pformat(payload)))
-  logger.wtil(str(r.content))
+logger.wtil("Number of updated products: "+str(number_of_updated_products))

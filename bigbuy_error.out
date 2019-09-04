@@ -1,4 +1,0 @@
-  File "BigBuy1.py", line 163
-    if product_id imagesjson[k]['id']:
-                           ^
-SyntaxError: invalid syntax
