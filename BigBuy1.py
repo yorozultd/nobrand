@@ -181,10 +181,6 @@ for i in range(len(productsjson)):
     description_in_english  = this_english_information['description']
 
 
-# Please get this from https://api.bigbuy.eu/rest/catalog/categories.json?isoCode=ru :
-    #category= thisproduct['category']
-# Please get this from https://api.bigbuy.eu/rest/catalog/categories.json?isoCode=ru :
-    #parent_category = thisproduct['category']
     for k in range(len(categoriesjson)):
         if thisproduct['category']== categoriesjson[k]['id']:
             this_cat_info = categoriesjson[k]
@@ -195,7 +191,7 @@ for i in range(len(productsjson)):
             break
     logger.wtil("At product: "+str(this_cat_infoEn['name']))
     category= this_cat_info['name']
-    categoryEn= this_cat_info['name']
+    categoryEn= this_cat_infoEn['name']
     parent_category = this_cat_info['parentCategory']
     style= "NAN"
     color= "NAN"
