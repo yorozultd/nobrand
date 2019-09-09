@@ -233,9 +233,6 @@ for i in range(len(productsjson)):
        disabled_categories.append(categoryEn)
     if(i % 10000 == 0): 
      logger.wtil("disabled_categories: "+str(disabled_categories)+" "+str(i))
-    if(sku in allowed_skus):
-     logger.wtil("interesting: "+str(categoryEn))
-    upload_this = False
 
     product = Product()
     smalldescription = description[:100]
