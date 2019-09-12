@@ -7,7 +7,6 @@ import pprint
 import csv
 import pickle
 import json
-from progress.bar import Bar
 from time import sleep
 import sys
 import argparse
@@ -337,14 +336,21 @@ for i in range(len(productsjson)):
     data.append(thisproduct['wholesalePrice'])
     product.setData(data)
     products.append(product)
-    if(args.find and str(ids) == "1041749"):
-     logger.wtil("At product: ("+str(sku)+") "+str(title_in_english)+" ("+str(categoryEn)+") "+str(i))
-     logger.wtil(str(thisproduct))
-     logger.wtil(str(thisinformation))
-    if(args.find and str(sku) == "S0329581"):
-     logger.wtil("At product: ("+str(sku)+") "+str(title_in_english)+" ("+str(categoryEn)+") "+str(i))
-     logger.wtil(str(thisproduct))
-     logger.wtil(str(thisinformation))
+    number_of_variations = len(this_variation)
+
+    has_variations = 1 if number_of_variations > 0 else 0
+     
+
+#    if(args.find and str(ids) == "1041749"):
+#     logger.wtil("At product: ("+str(sku)+") "+str(title_in_english)+" ("+str(categoryEn)+") "+str(i))
+#     logger.wtil(str(thisproduct))
+#     logger.wtil(str(thisinformation))
+#    if(args.find and str(sku) == "S0329581"):
+#     logger.wtil("At product: ("+str(sku)+") "+str(title_in_english)+" ("+str(categoryEn)+") "+str(i))
+#     logger.wtil(str(thisproduct))
+#     logger.wtil(str(thisinformation))
+    
+    if(has_variations):
      logger.wtil("Number of variations: "+str(len(this_variation)))
      logger.wtil("This has these variations: "+str(this_variation))
      for variation in this_variation: 
@@ -377,6 +383,7 @@ for i in range(len(productsjson)):
                      'brand':                             manufacturer,
                      'supplier':                          "bigb",
                      'english_category' :                 categoryEn,
+                     'has_variations':                    has_variations,
                      'sku':                               data[4],
                      'parent_category':                   data[5],
                      'category':                          data[5],
@@ -394,7 +401,8 @@ for i in range(len(productsjson)):
       r = requests.post(add_product_endpoint, data=payload)
       logger.wtil(str(r.content))
      
-      logger.wtil(str(pprint.pformat(payload)))
+#      logger.wtil(str(pprint.pformat(payload)))
+
       logger.wtil(str(r.content))
       number_of_updated_products = number_of_updated_products + 1
 
