@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "BigBuy1.py", line 272, in <module>
+    this_stock_info = [x for x in stock_info_json if x['id'] == product_id][0]
+  File "BigBuy1.py", line 272, in <listcomp>
+    this_stock_info = [x for x in stock_info_json if x['id'] == product_id][0]
+KeyboardInterrupt
