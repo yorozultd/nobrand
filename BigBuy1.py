@@ -350,27 +350,41 @@ for i in range(len(productsjson)):
 #     logger.wtil(str(thisproduct))
 #     logger.wtil(str(thisinformation))
     
-    if(has_variations):
-     logger.wtil("Number of variations: "+str(len(this_variation)))
-     logger.wtil("This has these variations: "+str(this_variation))
-     for variation in this_variation: 
-      this_attribute  = [x for x in variations_json if x['id'] == variation['id']]
-      logger.wtil("Attributes : "+str(this_attribute))
-      for attribute_1 in this_attribute:
-       attribute_2 = attribute_1['attributes']
-       for attribute_3 in attribute_2:
-        logger.wtil("Attr. Id : "+str(attribute_3['id']))
-        attr_id = attribute_3['id']
-        english_attributes  = [x for x in attributes_english_json if x['id'] == attr_id]
-        logger.wtil("Attr. : "+str(english_attributes))
-        for english_attribute in english_attributes:
-         a_group  = [x for x in attributes_groups_english_json if x['id'] == english_attribute['attributeGroup']]
-         logger.wtil("Group. : "+str(a_group))
 
           
       
 
+    full_payload = {}
     if(args.send and upload_this):
+     if(has_variations):
+      logger.wtil("Number of variations: "+str(len(this_variation)))
+      logger.wtil("This has these variations: "+str(this_variation))
+
+      variation_counter = 0
+
+      for variation in this_variation: 
+       this_attribute  = [x for x in variations_json if x['id'] == variation['id']]
+#       logger.wtil("Attributes : "+str(this_attribute))
+       for attribute_1 in this_attribute:
+        attribute_2 = attribute_1['attributes']
+        for attribute_3 in attribute_2:
+#         logger.wtil("Attr. Id : "+str(attribute_3['id']))
+         attr_id = attribute_3['id']
+         english_attributes  = [x for x in attributes_english_json if x['id'] == attr_id]
+#         logger.wtil("Attr. : "+str(english_attributes))
+         attribute_name = english_attributes[0]['name'] if len(english_attributes) > 0 else  "UNKNOWN"
+         for english_attribute in english_attributes:
+          a_group  = [x for x in attributes_groups_english_json if x['id'] == english_attribute['attributeGroup']]
+#          logger.wtil("Group. : "+str(a_group))
+          group_name = a_group[0]['name'] if len(a_group) > 0 else "UNKNOWN"
+          english_value = attribute_name
+          english_name  = group_name
+
+          full_payload.update({'english_name_'+str(variation_counter) : english_name }) 
+          full_payload.update({'english_value_'+str(variation_counter) : english_value }) 
+
+       variation_counter = variation_counter + 1
+
       logger.wtil("Passing: "+str(title_in_english))
       payload = {
                      'bigbuy':                            data[0],
@@ -384,6 +398,7 @@ for i in range(len(productsjson)):
                      'supplier':                          "bigb",
                      'english_category' :                 categoryEn,
                      'has_variations':                    has_variations,
+                     'number_of_variations':              number_of_variations,
                      'sku':                               data[4],
                      'parent_category':                   data[5],
                      'category':                          data[5],
@@ -398,10 +413,11 @@ for i in range(len(productsjson)):
                      'novat_price':                       data[14],
              }
      
-      r = requests.post(add_product_endpoint, data=payload)
+      full_payload.update(payload) 
+      r = requests.post(add_product_endpoint, data=full_payload)
       logger.wtil(str(r.content))
      
-#      logger.wtil(str(pprint.pformat(payload)))
+#      logger.wtil(str(pprint.pformat(full_payload)))
 
       logger.wtil(str(r.content))
       number_of_updated_products = number_of_updated_products + 1
