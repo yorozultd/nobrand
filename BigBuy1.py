@@ -37,10 +37,17 @@ AuthHeader= {"Authorization":"Bearer Zjk2ZTI0YWE1ZGNiNzBmMWNkZWIwNjliNTE2NzcyNDQ
 
 def download(logger) :
     logger.wtil("Now updating...")
+
     logger.wtil("Getting stock_info...")
     with open("./api_data/stock_info","wb") as f :
         r=requests.get("https://api.bigbuy.eu/rest/catalog/productsstock.json", headers=AuthHeader)
         pickle.dump(r.content, f);
+
+    logger.wtil("Getting variation stock_info...")
+    with open("./api_data/variation_stock_info","wb") as f :
+        r=requests.get("http://api.bigbuy.eu/rest/catalog/productsvariationsstock.json", headers=AuthHeader)
+        pickle.dump(r.content, f);
+
     logger.wtil("Getting products...")
     with open("./api_data/Products","wb") as f :
         r=requests.get("https://api.bigbuy.eu/rest/catalog/products", headers=AuthHeader)
@@ -161,6 +168,8 @@ with open("./api_data/Products","rb") as f :
     products =pickle.load(f)
 with open("./api_data/stock_info","rb") as f :
     stock_info = pickle.load(f)
+with open("./api_data/variation_stock_info","rb") as f :
+    variation_stock_info = pickle.load(f)
 with open("./api_data/english_information","rb") as f :
     english_information =pickle.load(f)
 with open("./api_data/Information","rb") as f :
@@ -198,6 +207,8 @@ with open("./api_data/attributes_groups_russian","rb") as f :
 
 productsjson = json.loads(products)
 stock_info_json = json.loads(stock_info)
+variation_stock_info_json = json.loads(variation_stock_info)
+
 informationjson = json.loads(information)
 english_informationjson = json.loads(english_information)
 imagesjson = json.loads(images)
@@ -370,6 +381,8 @@ for i in range(len(productsjson)):
         for attribute_3 in attribute_2:
 #         logger.wtil("Attr. Id : "+str(attribute_3['id']))
          attr_id = attribute_3['id']
+         variation_stock_info = [x for x in variation_stock_info_json if x['id'] == attr_id][0]["stocks"][0]["quantity"] if len([x for x in variation_stock_info_json if x['id'] == attr_id]) > 0 else 0
+
          english_attributes  = [x for x in attributes_english_json if x['id'] == attr_id]
 #         logger.wtil("Attr. : "+str(english_attributes))
          attribute_name = english_attributes[0]['name'] if len(english_attributes) > 0 else  "UNKNOWN"
@@ -382,6 +395,21 @@ for i in range(len(productsjson)):
 
           full_payload.update({'english_name_'+str(variation_counter) : english_name }) 
           full_payload.update({'english_value_'+str(variation_counter) : english_value }) 
+
+         russian_attributes  = [x for x in attributes_russian_json if x['id'] == attr_id]
+#         logger.wtil("Attr. : "+str(russian_attributes))
+         attribute_name = russian_attributes[0]['name'] if len(russian_attributes) > 0 else  "UNKNOWN"
+         for russian_attribute in russian_attributes:
+          a_group  = [x for x in attributes_groups_russian_json if x['id'] == russian_attribute['attributeGroup']]
+#          logger.wtil("Group. : "+str(a_group))
+          group_name = a_group[0]['name'] if len(a_group) > 0 else "UNKNOWN"
+          russian_value = attribute_name
+          russian_name  = group_name
+
+          full_payload.update({'russian_name_'+str(variation_counter) : russian_name }) 
+          full_payload.update({'russian_value_'+str(variation_counter) : russian_value }) 
+
+          full_payload.update({'stock_info_'+str(variation_counter) : variation_stock_info }) 
 
        variation_counter = variation_counter + 1
 
