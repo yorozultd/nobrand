@@ -177,6 +177,9 @@ with open("./api_data/variations","rb") as f :
 
 with open("./api_data/productsvariations","rb") as f :
     productsvariations = pickle.load(f)
+with open("./api_data/productsvariationsstock","rb") as f :
+    productsvariationsstock = pickle.load(f)
+
 
 with open("./api_data/categoriesEn","rb") as f :
     categoriesEn =pickle.load(f)
@@ -205,6 +208,8 @@ categoriesjson = json.loads(categories)
 categoriesjsonEn = json.loads(categoriesEn)
 manufacturersjson = json.loads(manufacturers)
 productsvariations_json = json.loads(productsvariations)
+
+productsvariationsstock_json = json.loads(productsvariationsstock)
 
 variations_json = json.loads(variations)
 
@@ -370,6 +375,10 @@ for i in range(len(productsjson)):
         for attribute_3 in attribute_2:
 #         logger.wtil("Attr. Id : "+str(attribute_3['id']))
          attr_id = attribute_3['id']
+
+         this_variation_stock_info = [x for x in productsvariationsstock_json if x['id'] == variation['id']]
+         variation_stock_info  = this_variation_stock_info[0]['stocks'][0]['quantity']
+
          english_attributes  = [x for x in attributes_english_json if x['id'] == attr_id]
 #         logger.wtil("Attr. : "+str(english_attributes))
          attribute_name = english_attributes[0]['name'] if len(english_attributes) > 0 else  "UNKNOWN"
@@ -382,6 +391,7 @@ for i in range(len(productsjson)):
 
           full_payload.update({'english_name_'+str(variation_counter) : english_name }) 
           full_payload.update({'english_value_'+str(variation_counter) : english_value }) 
+          full_payload.update({'stock_info_'+str(variation_counter) : variation_stock_info }) 
 
        variation_counter = variation_counter + 1
 
