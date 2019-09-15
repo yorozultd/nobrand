@@ -387,7 +387,7 @@ for i in range(len(productsjson)):
         for attribute_3 in attribute_2:
 #         logger.wtil("Attr. Id : "+str(attribute_3['id']))
          attr_id = attribute_3['id']
-         variation_stock_info = [x for x in variation_stock_info_json if x['id'] == attr_id][0]["stocks"][0]["quantity"] if len([x for x in variation_stock_info_json if x['id'] == attr_id]) > 0 else 0
+         variation_stock_info = [x for x in variation_stock_info_json if x['id'] == variation['id']][0]["stocks"][0]["quantity"] if len([x for x in variation_stock_info_json if x['id'] == variation['id']]) > 0 else 0
 
          english_attributes  = [x for x in attributes_english_json if x['id'] == attr_id]
 #         logger.wtil("Attr. : "+str(english_attributes))
@@ -416,8 +416,8 @@ for i in range(len(productsjson)):
           full_payload.update({'russian_name_'+str(variation_counter) : russian_name }) 
           full_payload.update({'russian_value_'+str(variation_counter) : russian_value }) 
 
-          full_payload.update({'stock_info_'+str(variation_counter) : variation_stock_info }) 
-          full_payload.update({'variation_price_'+str(variation_counter) : wholesale_price }) 
+         full_payload.update({'variation_price_'+str(variation_counter) : wholesale_price }) 
+         logger.wtil(english_name+": "+english_value+": "+str(variation_stock_info)+": "+str(wholesale_price))
 
        variation_counter = variation_counter + 1
 
