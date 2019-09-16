@@ -281,146 +281,147 @@ for i in range(len(productsjson)):
     thisproduct = productsjson[i]
     product_id = productsjson[i]['id']
 
-    thisinformation = [x for x in informationjson if x['id'] == product_id][0]
-    this_english_information = [x for x in english_informationjson if x['id'] == product_id][0]
-    thisimages = [x for x in imagesjson if x['id'] == product_id][0]
-    this_stock_info = [x for x in stock_info_json if x['id'] == product_id][0]
-    this_variation  = [x for x in productsvariations_json if x['product'] == product_id]
-
-    stock_info  = this_stock_info['stocks'][0]['quantity']
-    ids         = thisproduct['id']
-    description = thisinformation['description']
-    title       = thisinformation['name']
-    sku         = thisinformation['sku']
-
-    title_in_english = this_english_information['name']
-
-    for k in range(len(categoriesjson)):
-        if thisproduct['category']== categoriesjson[k]['id']:
-            this_cat_info = categoriesjson[k]
-            break
-    for k in range(len(categoriesjsonEn)):
-        if thisproduct['category']== categoriesjsonEn[k]['id']:
-            this_cat_infoEn = categoriesjsonEn[k]
-            break
-    category= this_cat_info['name']
-    categoryEn= this_cat_infoEn['name']
-
-    for k in range(len(manufacturersjson)):
-        if thisproduct['manufacturer']== manufacturersjson[k]['id']:
-            manufacturer = manufacturersjson[k]['name']
-            break
-
-    upload_this = False
-    if(categoryEn in allowed_categories.ac and int(thisproduct['wholesalePrice']) > minimum_price.mp):
-#     logger.wtil("At product: "+str(title_in_english)+" ("+str(categoryEn)+") "+str(i))
-     upload_this = True
-     disabled_skus = ["S0322441"]
-     if(sku in disabled_skus):
-      upload_this = False
-    else: 
-     if(categoryEn not in disabled_categories ):
-       disabled_categories.append(categoryEn)
-    if(i % 10000 == 0): 
-     logger.wtil("disabled_categories: "+str(disabled_categories)+" "+str(i))
-
-    product = Product()
-    smalldescription = description[:100]
-    description = description
-    description_in_english  = this_english_information['description']
-
-
-    parent_category = this_cat_info['parentCategory']
-    style= "NAN"
-    color= "NAN"
-    gender = "NAN"
-    data= [ids,smalldescription,description,title,sku,category,style,color,gender]
-    try:
-        numberofimages = len(thisimages['images'])
-    except:
-        numberofimages=0
-    for l in range(min(3,numberofimages)) :
-        try :
-            data.append(thisimages['images'][l]['url'])
-        except:
-            data.append("")
-    for h in range(3-numberofimages):
-        data.append("Null")
-    data.append(thisproduct['retailPrice'])
-    data.append(thisproduct['inShopsPrice'])
-    data.append(thisproduct['wholesalePrice'])
-    product.setData(data)
-    products.append(product)
-    number_of_variations = len(this_variation)
-
-    has_variations = 1 if number_of_variations > 0 else 0
-     
-
-#    if(args.find and str(ids) == "1041749"):
-#     logger.wtil("At product: ("+str(sku)+") "+str(title_in_english)+" ("+str(categoryEn)+") "+str(i))
-#     logger.wtil(str(thisproduct))
-#     logger.wtil(str(thisinformation))
-#    if(args.find and str(sku) == "S0329581"):
-#     logger.wtil("At product: ("+str(sku)+") "+str(title_in_english)+" ("+str(categoryEn)+") "+str(i))
-#     logger.wtil(str(thisproduct))
-#     logger.wtil(str(thisinformation))
-    
-
-          
+    if(len([x for x in informationjson if x['id'] == product_id]) > 0):
+     thisinformation = [x for x in informationjson if x['id'] == product_id][0]
+     this_english_information = [x for x in english_informationjson if x['id'] == product_id][0]
+     thisimages = [x for x in imagesjson if x['id'] == product_id][0]
+     this_stock_info = [x for x in stock_info_json if x['id'] == product_id][0]
+     this_variation  = [x for x in productsvariations_json if x['product'] == product_id]
+ 
+     stock_info  = this_stock_info['stocks'][0]['quantity']
+     ids         = thisproduct['id']
+     description = thisinformation['description']
+     title       = thisinformation['name']
+     sku         = thisinformation['sku']
+ 
+     title_in_english = this_english_information['name']
+ 
+     for k in range(len(categoriesjson)):
+         if thisproduct['category']== categoriesjson[k]['id']:
+             this_cat_info = categoriesjson[k]
+             break
+     for k in range(len(categoriesjsonEn)):
+         if thisproduct['category']== categoriesjsonEn[k]['id']:
+             this_cat_infoEn = categoriesjsonEn[k]
+             break
+     category   = this_cat_info['name']
+     categoryEn = this_cat_infoEn['name']
+ 
+     for k in range(len(manufacturersjson)):
+         if thisproduct['manufacturer']== manufacturersjson[k]['id']:
+             manufacturer = manufacturersjson[k]['name']
+             break
+ 
+     upload_this = False
+     if(categoryEn in allowed_categories.ac and int(thisproduct['wholesalePrice']) > minimum_price.mp):
+ #     logger.wtil("At product: "+str(title_in_english)+" ("+str(categoryEn)+") "+str(i))
+      upload_this = True
+      disabled_skus = ["S0322441"]
+      if(sku in disabled_skus):
+       upload_this = False
+     else: 
+      if(categoryEn not in disabled_categories ):
+        disabled_categories.append(categoryEn)
+ 
+     product = Product()
+     smalldescription = description[:100]
+     description = description
+     description_in_english  = this_english_information['description']
+ 
+ 
+     parent_category = this_cat_info['parentCategory']
+     style= "NAN"
+     color= "NAN"
+     gender = "NAN"
+     data= [ids,smalldescription,description,title,sku,categoryEn,style,color,gender]
+     try:
+         numberofimages = len(thisimages['images'])
+     except:
+         numberofimages=0
+     for l in range(min(3,numberofimages)) :
+         try :
+             data.append(thisimages['images'][l]['url'])
+         except:
+             data.append("")
+     for h in range(3-numberofimages):
+         data.append("Null")
+     data.append(thisproduct['retailPrice'])
+     data.append(thisproduct['inShopsPrice'])
+     data.append(thisproduct['wholesalePrice'])
+     product.setData(data)
+     products.append(product)
+     number_of_variations = len(this_variation)
+ 
+     has_variations = 1 if number_of_variations > 0 else 0
       
-
-    full_payload = {}
-    if(args.send and upload_this):
-     if(has_variations):
-      logger.wtil("Number of variations: "+str(len(this_variation)))
-      logger.wtil("This has these variations: "+str(this_variation))
-
-      variation_counter = 0
-
-      for variation in this_variation: 
-       wholesale_price = variation['wholesalePrice']
-       retail_price    = variation['retailPrice']
-       this_attribute  = [x for x in variations_json if x['id'] == variation['id']]
-#       logger.wtil("Attributes : "+str(this_attribute))
-       for attribute_1 in this_attribute:
-        attribute_2 = attribute_1['attributes']
-        for attribute_3 in attribute_2:
-#         logger.wtil("Attr. Id : "+str(attribute_3['id']))
-         attr_id = attribute_3['id']
-         variation_stock_info = [x for x in variation_stock_info_json if x['id'] == variation['id']][0]["stocks"][0]["quantity"] if len([x for x in variation_stock_info_json if x['id'] == variation['id']]) > 0 else 0
-
-         english_attributes  = [x for x in attributes_english_json if x['id'] == attr_id]
-#         logger.wtil("Attr. : "+str(english_attributes))
-         attribute_name = english_attributes[0]['name'] if len(english_attributes) > 0 else  "UNKNOWN"
-         for english_attribute in english_attributes:
-          a_group  = [x for x in attributes_groups_english_json if x['id'] == english_attribute['attributeGroup']]
-#          logger.wtil("Group. : "+str(a_group))
-          group_name = a_group[0]['name'] if len(a_group) > 0 else "UNKNOWN"
-          english_value = attribute_name
-          english_name  = group_name
-
-          full_payload.update({'english_name_'+str(variation_counter) : english_name }) 
-          full_payload.update({'english_value_'+str(variation_counter) : english_value }) 
-          full_payload.update({'stock_info_'+str(variation_counter) : variation_stock_info }) 
-
-         russian_attributes  = [x for x in attributes_russian_json if x['id'] == attr_id]
-#         logger.wtil("Attr. : "+str(russian_attributes))
-         attribute_name = russian_attributes[0]['name'] if len(russian_attributes) > 0 else  "UNKNOWN"
-         for russian_attribute in russian_attributes:
-          a_group  = [x for x in attributes_groups_russian_json if x['id'] == russian_attribute['attributeGroup']]
-#          logger.wtil("Group. : "+str(a_group))
-          group_name = a_group[0]['name'] if len(a_group) > 0 else "UNKNOWN"
-          russian_value = attribute_name
-          russian_name  = group_name
-
-          full_payload.update({'russian_name_'+str(variation_counter) : russian_name }) 
-          full_payload.update({'russian_value_'+str(variation_counter) : russian_value }) 
-
-         full_payload.update({'variation_price_'+str(variation_counter) : wholesale_price }) 
-         logger.wtil(english_name+": "+english_value+": "+str(variation_stock_info)+": "+str(wholesale_price))
-
-       variation_counter = variation_counter + 1
-
+ 
+ #    if(args.find and str(ids) == "1041749"):
+ #     logger.wtil("At product: ("+str(sku)+") "+str(title_in_english)+" ("+str(categoryEn)+") "+str(i))
+ #     logger.wtil(str(thisproduct))
+ #     logger.wtil(str(thisinformation))
+ #    if(args.find and str(sku) == "S0329581"):
+ #     logger.wtil("At product: ("+str(sku)+") "+str(title_in_english)+" ("+str(categoryEn)+") "+str(i))
+ #     logger.wtil(str(thisproduct))
+ #     logger.wtil(str(thisinformation))
+     
+ 
+           
+       
+ 
+     full_payload = {}
+     if(args.send and upload_this):
+      if(has_variations):
+       logger.wtil("Number of variations: "+str(len(this_variation)))
+       logger.wtil("This has these variations: "+str(this_variation))
+ 
+       variation_counter = 0
+ 
+       for variation in this_variation: 
+        wholesale_price = variation['wholesalePrice']
+        retail_price    = variation['retailPrice']
+        this_attribute  = [x for x in variations_json if x['id'] == variation['id']]
+        logger.wtil("Attributes : "+str(this_attribute))
+        for attribute_1 in this_attribute:
+         attribute_2 = attribute_1['attributes']
+         logger.wtil("Attributes_2 : "+str(attribute_2))
+         full_payload.update({'number_of_attributes_'+str(variation_counter) : len(attribute_2) })
+         for attribute_3 in attribute_2:
+ #         logger.wtil("Attr. Id : "+str(attribute_3['id']))
+          attr_id = attribute_3['id']
+          variation_stock_info = [x for x in variation_stock_info_json if x['id'] == variation['id']][0]["stocks"][0]["quantity"] if len([x for x in variation_stock_info_json if x['id'] == variation['id']]) > 0 else 0
+ 
+          english_attributes  = [x for x in attributes_english_json if x['id'] == attr_id]
+          logger.wtil("english_attributes. : "+str(english_attributes))
+          attribute_name = english_attributes[0]['name'] if len(english_attributes) > 0 else  "UNKNOWN"
+          for english_attribute in english_attributes:
+           a_group  = [x for x in attributes_groups_english_json if x['id'] == english_attribute['attributeGroup']]
+ #          logger.wtil("Group. : "+str(a_group))
+           group_name = a_group[0]['name'] if len(a_group) > 0 else "UNKNOWN"
+           english_value = attribute_name
+           english_name  = group_name
+ 
+           full_payload.update({'english_name_'+str(variation_counter) : english_name }) 
+           full_payload.update({'english_value_'+str(variation_counter) : english_value }) 
+           full_payload.update({'stock_info_'+str(variation_counter) : variation_stock_info }) 
+ 
+          russian_attributes  = [x for x in attributes_russian_json if x['id'] == attr_id]
+ #         logger.wtil("Attr. : "+str(russian_attributes))
+          attribute_name = russian_attributes[0]['name'] if len(russian_attributes) > 0 else  "UNKNOWN"
+          for russian_attribute in russian_attributes:
+           a_group  = [x for x in attributes_groups_russian_json if x['id'] == russian_attribute['attributeGroup']]
+ #          logger.wtil("Group. : "+str(a_group))
+           group_name = a_group[0]['name'] if len(a_group) > 0 else "UNKNOWN"
+           russian_value = attribute_name
+           russian_name  = group_name
+ 
+           full_payload.update({'russian_name_'+str(variation_counter) : russian_name }) 
+           full_payload.update({'russian_value_'+str(variation_counter) : russian_value }) 
+ 
+          full_payload.update({'variation_price_'+str(variation_counter) : wholesale_price }) 
+          logger.wtil(english_name+": "+english_value+": "+str(variation_stock_info)+": "+str(wholesale_price))
+ 
+        variation_counter = variation_counter + 1
+ 
       logger.wtil("Passing: "+str(title_in_english))
       payload = {
                      'bigbuy':                            data[0],
@@ -448,14 +449,24 @@ for i in range(len(productsjson)):
                      'suggested_price':                   data[13],
                      'novat_price':                       data[14],
              }
-     
+      
       full_payload.update(payload) 
       r = requests.post(add_product_endpoint, data=full_payload)
       logger.wtil(str(r.content))
-     
-#      logger.wtil(str(pprint.pformat(full_payload)))
-
+      
+ #     logger.wtil(str(pprint.pformat(full_payload)))
+ 
       logger.wtil(str(r.content))
       number_of_updated_products = number_of_updated_products + 1
 
+logger.wtil("Number of processed products: "+str(len(products)))
+found_categories = set([x.category for x in products])
+for category in found_categories:
+ number_of_products = len([x for x in products if x.category == category])
+ logger.wtil(category+" ("+str(number_of_products)+")")
+
 logger.wtil("Number of updated products: "+str(number_of_updated_products))
+
+logger.wtil("------------------------------------")
+logger.wtil("------------- FINISHED  ------------")
+logger.wtil("------------------------------------")
