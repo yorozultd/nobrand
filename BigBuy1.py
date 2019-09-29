@@ -153,8 +153,21 @@ class Product:
         self.street_price       = productdata[12]
         self.suggested_price    = productdata[13]
         self.novat_price        = productdata[14]
+option = "bigb"
+if(args.send):
+ option = "send"
+if(args.sync):
+ option = "sync"
+if(args.download):
+ option = "download"
+if(args.find):
+ option = "find"
+if(args.send):
+ option = "send"
 
-logger = lgr.Logger("bigbuy")
+
+logger = lgr.Logger(option)
+
 ts = time.time()
 
 logger.wtil("Launching application..."+datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S'))
@@ -258,13 +271,16 @@ if args.sync:
 
 
     for sku in all_listing_skus:
-        if( Quantity(sku,stock_info_json) < 1 ):
+        stock_quant = int(Quantity(sku,stock_info_json))
+        if( stock_quant < 1 ):
 
             endpoint = "http://no1brand.ru/disable-product-with-sku/"+str(sku)
             logger.wtil("Now disabling: "+str(sku))
             resp=requests.get(url=endpoint)
 
             logger.wtil(str(resp.content))
+        else:
+            logger.wtil(str(sku)+" is in stock ("+str(stock_quant)+").")
 
     logger.wtil("Finished sync...")
     sys.exit()
