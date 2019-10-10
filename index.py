@@ -11,34 +11,38 @@ def main():
     if args.senddata : 
         tree= ET.parse('./file.xml')
         root= tree.getroot();
-        products = root.findAll('product')
+        products = root.findall('Product')
+        print(products)
         for product in products  : 
-            sku = product.find("product_id").text
-            category = product.find("product_category").text
-            image_1 = product.find("product_image_1").text
-            image_2 = product.find("product_image_2").text
-            image_3 = product.find("product_image_3").text
-            colour = product.find("product_colour").text
-            product_title = product.find("product_name").text
-            small_description = product.find("product_description").text.split("<br>")[0]+"]]"
-            get_extended_description = product.find("product_description").text
-            product_image_2 = product.find("product_image_2").text
-            product_image_2 = product.find("product_image_2").text
-            product_image_2 = product.find("product_image_2").text
-            product_image_2 = product.find("product_image_2").text
-            #   send(small_description,get_extended_description,product_title,sku,image_1,category, ,color,gender,image_2,image_3,price)
+            print(product)
+            sku = product.find("Product_id").text
+            category = product.find("Product_SubCategory").text
+            image_1 = product.find("Product_Image_1").text
+            image_2 = product.find("Product_Image_2").text
+            image_3 = product.find("Product_Image_3").text
+            color = product.find("Product_Colour").text
+            product_title = product.find("Product_Name").text
+            small_description = product.find("Product_Description").text.split("<br>")[0]+"]]"
+            get_extended_description = product.find("Product_Description").text
+            novat_price = product.find("Product_Price_Special").text
+            suggested_price = product.find("Product_Price_Special").text
+            street_price = product.find("Product_Price").text
+            gender = product.find("Product_MainCategory").text
+            send(small_description,get_extended_description,product_title,sku,image_1,category,'style' ,color,gender,image_2,image_3,street_price,suggested_price,novat_price)
             break
     if args.sync : 
         sync()
 
-def send(small_description,get_extended_description,product_title,sku,image_1,category,style,colour,gender,image_2,image_3,street_price,suggested_prie,novat_price):
+def send(small_description,get_extended_description,product_title,sku,image_1,category,style,colour,gender,image_2,image_3,street_price,suggested_price,novat_price):
     add_product_endpoint = "http://no1brand.ru/add-product/"
+    # ! PRINTING THE PAYLOAD 
+    print([small_description,get_extended_description,product_title,sku,image_1,category,style,colour,gender,image_2,image_3,street_price,suggested_price,novat_price])
     payload = {
               'bigbuy':                   1,
               'description':              small_description,
               'extended_description':     get_extended_description,
               'title':                    product_title,
-              'sku':                      sku,
+              'sku':                      'GR-'+sku,
               'image_1':                  image_1,
               'category':                 category,
               'style':                    style,
@@ -50,7 +54,9 @@ def send(small_description,get_extended_description,product_title,sku,image_1,ca
               'suggested_price':          suggested_price,
               'novat_price':              novat_price
              }
-    requests.post(add_product_endpoint, data=payload)
+    res=requests.post(add_product_endpoint, data=payload)
+    print(res.content)
+
     
 
 
