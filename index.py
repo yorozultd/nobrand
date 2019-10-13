@@ -8,6 +8,7 @@ def main():
     args = parser.parse_args()
     print(args.senddata)
     print(args.sync)
+    working = 0
     if args.senddata : 
         tree= ET.parse('./file.xml')
         root= tree.getroot();
@@ -29,7 +30,9 @@ def main():
             street_price = product.find("Product_Price").text
             gender = product.find("Product_MainCategory").text
             send(small_description,get_extended_description,product_title,sku,image_1,category,'style' ,color,gender,image_2,image_3,street_price,suggested_price,novat_price)
-            break
+            working+=1
+            if(working == 2 ): 
+                break
     if args.sync : 
         sync()
 
@@ -38,10 +41,11 @@ def send(small_description,get_extended_description,product_title,sku,image_1,ca
     # ! PRINTING THE PAYLOAD 
     print([small_description,get_extended_description,product_title,sku,image_1,category,style,colour,gender,image_2,image_3,street_price,suggested_price,novat_price])
     payload = {
+              'stock_info' :              1,
               'bigbuy':                   1,
-              'description':              small_description,
-              'extended_description':     get_extended_description,
-              'title':                    product_title,
+              'description':              small_description.replace("[","").replace("]",""),
+              'extended_description':     get_extended_description.replace("[","").replace("]",""),
+              'title':                    product_title.replace("[","").replace("]",""),
               'sku':                      'GR-'+sku,
               'image_1':                  image_1,
               'category':                 category,
@@ -52,8 +56,10 @@ def send(small_description,get_extended_description,product_title,sku,image_1,ca
               'image_3':                  image_3,
               'street_price':             street_price,
               'suggested_price':          suggested_price,
-              'novat_price':              novat_price
+              'novat_price':              novat_price,
+              'supplier'  :               'griffati'
              }
+    print(payload)
     res=requests.post(add_product_endpoint, data=payload)
     print(res.content)
 
@@ -62,9 +68,13 @@ def send(small_description,get_extended_description,product_title,sku,image_1,ca
 
 def sync():
     print("Syncing .......  ")
-    r=requests.get("http://cdn-dropship.griffati.com/xmlExport.py?gui=0&datatype=prod&go=1&token=567504&apikey=hhhy-o90i-lltr-5cca&lg=en&fbclid=IwAR2ItKHajHL4P8xyU8lhlks97Trj7phjCqv_saaZ63ZnG14FTgZGs_diHjQ")
+    r=requests.get("http://cdn-dropship.griffati.com/xmlExport.py?gui=0&datatype=prod&go=1&token=567504&apikey=hhhy-o90i-lltr-5cca&lg=ru&fbclid=IwAR2ItKHajHL4P8xyU8lhlks97Trj7phjCqv_saaZ63ZnG14FTgZGs_diHjQ")
     with open("file.xml",'wb') as f:  
         f.write(r.content) 
 
 if __name__ == "__main__":
     main()
+
+
+
+#https://www.no1brand.ru/pr/N1B-11ED9FB
