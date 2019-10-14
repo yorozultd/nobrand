@@ -2,12 +2,12 @@ import argparse
 import xml.etree.ElementTree as ET
 import requests
 def main():
-    parser = argparse.ArgumentParser(description='Python Script to post and sync data ')
+    parser = argparse.ArgumentParser(description='Python Script to post and download data ')
     parser.add_argument('-s','--senddata',action='store_true',help='To send the post requests to the server')
     parser.add_argument('-d','--download',action='store_true',help='To download the xml data ')
     args = parser.parse_args()
     print(args.senddata)
-    print(args.sync)
+    print(args.download)
     working = 0
     if args.senddata : 
         tree= ET.parse('./file.xml')
@@ -30,12 +30,12 @@ def main():
             street_price = product.find("Product_Price").text
             gender = product.find("Product_MainCategory").text
             brand = product.find("Product_Manufacturer").text
-            if novat_price >10 and novat_price < 350 : 
+            if int(novat_price) >10 and int(novat_price) < 350 : 
                 send(small_description,get_extended_description,product_title,sku,image_1,category,'style' ,color,gender,image_2,image_3,street_price,suggested_price,novat_price,brand)
             working+=1
             if(working == 2 ): 
                 break
-    if args.sync : 
+    if args.download : 
         sync()
 
 def send(small_description,get_extended_description,product_title,sku,image_1,category,style,colour,gender,image_2,image_3,street_price,suggested_price,novat_price,brand):
@@ -45,7 +45,7 @@ def send(small_description,get_extended_description,product_title,sku,image_1,ca
     payload = {
               'stock_info' :              1,
               'bigbuy':                   0,
-              'description':              get_extended_description.replace("[","").replace("]","")#small_description.replace("[","").replace("]",""),
+              'description':              get_extended_description.replace("[","").replace("]",""),#small_description.replace("[","").replace("]",""),
               'extended_description':     '',
               'title':                    product_title.replace("[","").replace("]",""),
               'sku':                      'GR-'+sku,
