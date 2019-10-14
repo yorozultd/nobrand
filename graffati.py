@@ -4,7 +4,7 @@ import requests
 def main():
     parser = argparse.ArgumentParser(description='Python Script to post and sync data ')
     parser.add_argument('-s','--senddata',action='store_true',help='To send the post requests to the server')
-    parser.add_argument('-u','--sync',action='store_true',help='To sync the xml data ')
+    parser.add_argument('-d','--download',action='store_true',help='To download the xml data ')
     args = parser.parse_args()
     print(args.senddata)
     print(args.sync)
@@ -29,22 +29,24 @@ def main():
             suggested_price = product.find("Product_Price_Special").text
             street_price = product.find("Product_Price").text
             gender = product.find("Product_MainCategory").text
-            send(small_description,get_extended_description,product_title,sku,image_1,category,'style' ,color,gender,image_2,image_3,street_price,suggested_price,novat_price)
+            brand = product.find("Product_Manufacturer").text
+            if novat_price >10 and novat_price < 350 : 
+                send(small_description,get_extended_description,product_title,sku,image_1,category,'style' ,color,gender,image_2,image_3,street_price,suggested_price,novat_price,brand)
             working+=1
             if(working == 2 ): 
                 break
     if args.sync : 
         sync()
 
-def send(small_description,get_extended_description,product_title,sku,image_1,category,style,colour,gender,image_2,image_3,street_price,suggested_price,novat_price):
+def send(small_description,get_extended_description,product_title,sku,image_1,category,style,colour,gender,image_2,image_3,street_price,suggested_price,novat_price,brand):
     add_product_endpoint = "http://no1brand.ru/add-product/"
     # ! PRINTING THE PAYLOAD 
     print([small_description,get_extended_description,product_title,sku,image_1,category,style,colour,gender,image_2,image_3,street_price,suggested_price,novat_price])
     payload = {
               'stock_info' :              1,
-              'bigbuy':                   1,
-              'description':              small_description.replace("[","").replace("]",""),
-              'extended_description':     get_extended_description.replace("[","").replace("]",""),
+              'bigbuy':                   0,
+              'description':              get_extended_description.replace("[","").replace("]","")#small_description.replace("[","").replace("]",""),
+              'extended_description':     '',
               'title':                    product_title.replace("[","").replace("]",""),
               'sku':                      'GR-'+sku,
               'image_1':                  image_1,
@@ -57,7 +59,8 @@ def send(small_description,get_extended_description,product_title,sku,image_1,ca
               'street_price':             street_price,
               'suggested_price':          suggested_price,
               'novat_price':              novat_price,
-              'supplier'  :               'griffati'
+              'supplier'  :               'griffati',
+              'brand'  :                    brand
              }
     print(payload)
     res=requests.post(add_product_endpoint, data=payload)
