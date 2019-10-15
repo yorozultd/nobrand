@@ -10,7 +10,7 @@ def main():
     print(args.download)
     working = 0
     if args.senddata : 
-        tree= ET.parse('./file.xml')
+        tree= ET.parse('./graffati.xml')
         root= tree.getroot();
         products = root.findall('Product')
         print(products)
@@ -30,7 +30,7 @@ def main():
             street_price = product.find("Product_Price").text
             gender = product.find("Product_MainCategory").text
             brand = product.find("Product_Manufacturer").text
-            if int(novat_price) >10 and int(novat_price) < 350 : 
+            if int(novat_price) >20 and int(novat_price) < 350 : 
                 send(small_description,get_extended_description,product_title,sku,image_1,category,'style' ,color,gender,image_2,image_3,street_price,suggested_price,novat_price,brand)
             working+=1
             if(working == 2 ): 
@@ -73,7 +73,7 @@ def sync():
     print("Syncing .......  ")
     r=requests.get("http://cdn-dropship.griffati.com/xmlExport.py?gui=0&datatype=prod&go=1&token=567504&apikey=hhhy-o90i-lltr-5cca&lg=ru")
     #r=requests.get("http://cdn-dropship.griffati.com/xmlExport.py?gui=0&datatype=prod&go=1&token=567504&apikey=hhhy-o90i-lltr-5cca&lg=ru&fbclid=IwAR2ItKHajHL4P8xyU8lhlks97Trj7phjCqv_saaZ63ZnG14FTgZGs_diHjQ")
-    with open("file.xml",'wb') as f:  
+    with open("graffati.xml",'wb') as f:  
         f.write(r.content) 
 
 if __name__ == "__main__":
