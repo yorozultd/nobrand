@@ -2,6 +2,10 @@ import argparse
 import xml.etree.ElementTree as ET
 import requests
 import numpy 
+from progress.bar import Bar
+
+bar = Bar('Sending', max=4000)
+
 try : 
     dictdata = numpy.load("stockDictionary.npy",allow_pickle=True)
 except :
@@ -17,7 +21,8 @@ def main():
     parser.add_argument('-s','--senddata',action='store_true',help='To send the post requests to the server')
     parser.add_argument('-d','--download',action='store_true',help='To download the xml data ')
     parser.add_argument('-sd','--syncdictionary',action='store_true',help='To create a dictionary file for the stock info ')
-    parser.add_argument('-ds','--downloadStock',action='store_true',help='To create a dictionary file for the stock info ')
+    parser.add_argument('-ds','--downloadStock',action='store_true',help='To download XML file and create a dictionary file for the stock info ')
+    parser.add_argument('-sync','--synchronize',action='store_true',help='To synchronize the products in the website ')
 
     args = parser.parse_args()
     working = 0
@@ -27,6 +32,17 @@ def main():
         if not args.syncdictionary : 
             print("Try using python graffati.py -sd to create the dictionary file for stock info")
             exit();
+    if args.synchronize:
+        tree= ET.parse('./graffati.xml')
+        root= tree.getroot();
+        products = root.findall('Product')
+        for product in products  : 
+            sku = product.find("Product_id").text
+            si= dictdata.item().get(sku)
+            if si=='0' : 
+                endpoint = "http://no1brand.ru/disable-product-with-sku/"+str(sku)
+                datareturned= requests.get(url=endpoint)
+                print(datareturned)
     if args.syncdictionary : 
         syncDictionary()
     if args.senddata : 
@@ -48,26 +64,33 @@ def main():
             street_price = product.find("Product_Price").text
             gender = product.find("Product_MainCategory").text
             brand = product.find("Product_Manufacturer").text
-            if int(novat_price) >40 and int(novat_price) < 350 : 
-                send(small_description,get_extended_description,product_title,sku,image_1,category,'style' ,color,gender,image_2,image_3,street_price,suggested_price,novat_price,brand)
-                working+=1
-                print('#')
-            if(working == 3 ): 
-                break
+            if float(novat_price) >40 and float(novat_price) < 350 : 
+                if working==6558:
+                    try : 
+                        si= dictdata.item().get(sku)
+                        #print("asd"+ str(novat_price))
+                        if si=='0':
+                            pass
+                        else:
+                            send(si,small_description,get_extended_description,product_title,sku,image_1,category,'style' ,color,gender,image_2,image_3,street_price,suggested_price,novat_price,brand)
+                            bar.next()
+                    except :
+                        si="N/A"
+                else :
+                    si= dictdata.item().get(sku)
+                    if si=='0':
+                        pass
+                    else:
+                        working+=1
+                        bar.next()
+        bar.finish()
     if args.download : 
         sync()
     if args.downloadStock : 
         syncstock();
-def send(small_description,get_extended_description,product_title,sku,image_1,category,style,colour,gender,image_2,image_3,street_price,suggested_price,novat_price,brand):
+def send(si,small_description,get_extended_description,product_title,sku,image_1,category,style,colour,gender,image_2,image_3,street_price,suggested_price,novat_price,brand):
     add_product_endpoint = "http://no1brand.ru/add-product/"
     # ! PRINTING THE PAYLOAD 
-    try : 
-        si= dictdata.item().get(sku)
-    except :
-        si="N/A"
-        print(sku)
-    print(si)
-    
     payload = {
               'stock_info' :              1,
               'bigbuy':                   0,
